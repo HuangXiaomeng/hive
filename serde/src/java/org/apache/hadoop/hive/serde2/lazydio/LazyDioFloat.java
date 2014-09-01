@@ -22,13 +22,12 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import org.apache.hadoop.hive.serde2.ByteStream;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyFloat;
 import org.apache.hadoop.hive.serde2.lazy.objectinspector.primitive.LazyFloatObjectInspector;
 
 /**
  * LazyFloatBinary for storing a float value as a FloatWritable. This class complements class
- * LazyFloat. It's primary difference is the {@link #init(ByteArrayRef, int, int)} method, which
+ * LazyFloat. It's primary difference is the {@link #init(byte[], int, int)} method, which
  * reads the float value stored from the default binary format.
  */
 public class LazyDioFloat extends LazyFloat {
@@ -52,12 +51,12 @@ public class LazyDioFloat extends LazyFloat {
    *        (org.apache.hadoop.hive.serde2.lazy.ByteArrayRef, int, int)
    */
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
 
     float value = 0.0F;
 
     try {
-      in = new ByteStream.Input(bytes.getData(), start, length);
+      in = new ByteStream.Input(bytes, start, length);
       din = new DataInputStream(in);
       value = din.readFloat();
       data.set(value);

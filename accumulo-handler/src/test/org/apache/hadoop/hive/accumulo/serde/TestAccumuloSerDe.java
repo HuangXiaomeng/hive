@@ -23,7 +23,6 @@ import org.apache.hadoop.hive.accumulo.LazyAccumuloRow;
 import org.apache.hadoop.hive.accumulo.columns.InvalidColumnMappingException;
 import org.apache.hadoop.hive.serde.serdeConstants;
 import org.apache.hadoop.hive.serde2.SerDeException;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyArray;
 import org.apache.hadoop.hive.serde2.lazy.LazyFactory;
 import org.apache.hadoop.hive.serde2.lazy.LazyMap;
@@ -410,15 +409,14 @@ public class TestAccumuloSerDe {
     map2.put("key20", "value20");
     map2.put("key21", "value21");
 
-    ByteArrayRef byteRef = new ByteArrayRef();
     // Default separators are 1-indexed (instead of 0-indexed), thus the separator at offset 1 is
     // (byte) 2
     // The separator for the hive row is \x02, for the row Id struct, \x03, and the maps \x04 and
     // \x05
     String accumuloRow = "key10\5value10\4key11\5value11\3key20\5value20\4key21\5value21";
     LazyStruct entireStruct = (LazyStruct) LazyFactory.createLazyObject(structOI);
-    byteRef.setData((accumuloRow + "\2foo").getBytes());
-    entireStruct.init(byteRef, 0, byteRef.getData().length);
+    byte[] value = (accumuloRow + "\2foo").getBytes();
+    entireStruct.init(value, 0, value.length);
 
     Mutation m = serializer.serialize(entireStruct, structOI);
     Assert.assertArrayEquals(accumuloRow.getBytes(), m.getRow());

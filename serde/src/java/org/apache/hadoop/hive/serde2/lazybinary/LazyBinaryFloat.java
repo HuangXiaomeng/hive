@@ -17,7 +17,6 @@
  */
 package org.apache.hadoop.hive.serde2.lazybinary;
 
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.WritableFloatObjectInspector;
 import org.apache.hadoop.io.FloatWritable;
 
@@ -38,9 +37,8 @@ public class LazyBinaryFloat extends
   }
 
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
     assert (4 == length);
-    data.set(Float.intBitsToFloat(LazyBinaryUtils.byteArrayToInt(bytes
-        .getData(), start)));
+    data.set(Float.intBitsToFloat(LazyBinaryUtils.byteArrayToInt(bytes, start)));
   }
 }

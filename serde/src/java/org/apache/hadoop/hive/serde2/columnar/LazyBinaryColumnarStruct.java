@@ -20,7 +20,6 @@ package org.apache.hadoop.hive.serde2.columnar;
 
 import java.util.List;
 
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyObjectBase;
 import org.apache.hadoop.hive.serde2.lazybinary.LazyBinaryFactory;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
@@ -35,7 +34,7 @@ public class LazyBinaryColumnarStruct extends ColumnarStructBase {
   }
 
   @Override
-  protected int getLength(ObjectInspector objectInspector, ByteArrayRef cachedByteArrayRef,
+  protected int getLength(ObjectInspector objectInspector, byte[] bytes,
       int start, int length) {
     if (length == 0) {
       return -1;
@@ -45,7 +44,7 @@ public class LazyBinaryColumnarStruct extends ColumnarStructBase {
       PrimitiveCategory primitiveCategory = ((PrimitiveObjectInspector) objectInspector)
           .getPrimitiveCategory();
       if (primitiveCategory.equals(PrimitiveCategory.STRING) && (length == 1) &&
-            (cachedByteArrayRef.getData()[start]
+            (bytes[start]
               == LazyBinaryColumnarSerDe.INVALID_UTF__SINGLE_BYTE[0])) {
         return 0;
       }

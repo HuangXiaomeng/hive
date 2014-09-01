@@ -15,26 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.hive.serde2.lazybinary;
 
-import org.apache.hadoop.hive.serde2.objectinspector.primitive.WritableVoidObjectInspector;
-import org.apache.hadoop.io.Writable;
+package org.apache.hadoop.hive.serde2;
+
+import org.apache.hadoop.hive.serde2.typeinfo.TypeInfo;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Properties;
 
 /**
- * LazyBinaryVoid for NULL which is a placeholder class and it does not need to store any data.
+ * Encode/decode binary format of column
+ *
+ * Currently, it's only supported by LazySimpleSerDe and HBaserSerDe, which is
+ * marked by {@link FieldRewritable} interface.
  */
-public class LazyBinaryVoid extends
-    LazyBinaryPrimitive<WritableVoidObjectInspector, Writable> {
+public interface FieldRewriter {
 
-  LazyBinaryVoid(WritableVoidObjectInspector oi) {
-    super(oi);
-  }
+  void init(List<String> columnNames, List<TypeInfo> columnTypes, Properties properties)
+      throws IOException;
 
-  LazyBinaryVoid(LazyBinaryVoid copy) {
-    super(copy);
-  }
+  void encode(int index, ByteStream.Input input, ByteStream.Output output) throws IOException;
 
-  @Override
-  public void init(byte[] bytes, int start, int length) {
-  }
+  void decode(int index, ByteStream.Input input, ByteStream.Output output) throws IOException;
+
 }

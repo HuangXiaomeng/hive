@@ -22,13 +22,12 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import org.apache.hadoop.hive.serde2.ByteStream;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyByte;
 import org.apache.hadoop.hive.serde2.lazy.objectinspector.primitive.LazyByteObjectInspector;
 
 /**
  * LazyByteBinary for storing a byte value as a ByteWritable. This class complements class
- * LazyByte. It's primary difference is the {@link #init(ByteArrayRef, int, int)} method, which
+ * LazyByte. It's primary difference is the {@link #init(byte[], int, int)} method, which
  * reads the raw byte value stored.
  */
 public class LazyDioByte extends LazyByte {
@@ -45,12 +44,12 @@ public class LazyDioByte extends LazyByte {
   }
 
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
 
     byte value = 0;
 
     try {
-      in = new ByteStream.Input(bytes.getData(), start, length);
+      in = new ByteStream.Input(bytes, start, length);
       din = new DataInputStream(in);
       value = din.readByte();
       data.set(value);

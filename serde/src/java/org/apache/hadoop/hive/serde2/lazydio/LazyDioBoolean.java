@@ -22,13 +22,12 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import org.apache.hadoop.hive.serde2.ByteStream;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyBoolean;
 import org.apache.hadoop.hive.serde2.lazy.objectinspector.primitive.LazyBooleanObjectInspector;
 
 /**
  * LazyBooleanBinary for storing a boolean value as an BooleanWritable. This class complements class
- * LazyBoolean. It's primary difference is the {@link #init(ByteArrayRef, int, int)} method, which
+ * LazyBoolean. It's primary difference is the {@link #init(byte[], int, int)} method, which
  * reads the boolean value stored from the default binary format.
  */
 public class LazyDioBoolean extends LazyBoolean {
@@ -52,12 +51,12 @@ public class LazyDioBoolean extends LazyBoolean {
    *        (org.apache.hadoop.hive.serde2.lazy.ByteArrayRef, int, int)
    */
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
 
     boolean value = false;
 
     try {
-      in = new ByteStream.Input(bytes.getData(), start, length);
+      in = new ByteStream.Input(bytes, start, length);
       din = new DataInputStream(in);
       value = din.readBoolean();
       data.set(value);

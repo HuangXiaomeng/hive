@@ -20,7 +20,6 @@ package org.apache.hadoop.hive.serde2.lazybinary;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hive.serde2.io.DateWritable;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazybinary.LazyBinaryUtils.VInt;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.WritableDateObjectInspector;
 
@@ -54,7 +53,7 @@ public class LazyBinaryDate extends
    * @param length
    */
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
-    data.setFromBytes(bytes.getData(), start, length, vInt);
+  public void init(byte[] bytes, int start, int length) {
+    data.setFromBytes(bytes, start, length, vInt);
   }
 }

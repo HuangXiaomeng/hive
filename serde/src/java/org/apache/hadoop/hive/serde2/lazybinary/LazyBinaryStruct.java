@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hive.serde2.SerDeStatsStruct;
 import org.apache.hadoop.hive.serde2.StructObject;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazybinary.LazyBinaryUtils.RecordInfo;
 import org.apache.hadoop.hive.serde2.lazybinary.LazyBinaryUtils.VInt;
 import org.apache.hadoop.hive.serde2.lazybinary.objectinspector.LazyBinaryStructObjectInspector;
@@ -91,7 +90,7 @@ public class LazyBinaryStruct extends LazyBinaryNonPrimitive<LazyBinaryStructObj
   }
 
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
     super.init(bytes, start, length);
     parsed = false;
     serializedSize = length;
@@ -108,8 +107,7 @@ public class LazyBinaryStruct extends LazyBinaryNonPrimitive<LazyBinaryStructObj
    */
   private void parse() {
 
-    List<? extends StructField> fieldRefs = ((StructObjectInspector) oi)
-        .getAllStructFieldRefs();
+    List<? extends StructField> fieldRefs = oi.getAllStructFieldRefs();
 
     if (fields == null) {
       fields = new LazyBinaryObject[fieldRefs.size()];
@@ -130,7 +128,6 @@ public class LazyBinaryStruct extends LazyBinaryNonPrimitive<LazyBinaryStructObj
 
     int fieldId = 0;
     int structByteEnd = start + length;
-    byte[] bytes = this.bytes.getData();
 
     byte nullByte = bytes[start];
     int lastFieldByteEnd = start + 1;

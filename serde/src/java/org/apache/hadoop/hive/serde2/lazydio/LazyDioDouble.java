@@ -22,13 +22,12 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import org.apache.hadoop.hive.serde2.ByteStream;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyDouble;
 import org.apache.hadoop.hive.serde2.lazy.objectinspector.primitive.LazyDoubleObjectInspector;
 
 /**
  * LazyDoubleBinary for storing a double value as a DoubleWritable. This class complements class
- * LazyDouble. It's primary difference is the {@link #init(ByteArrayRef, int, int)} method, which
+ * LazyDouble. It's primary difference is the {@link #init(byte[], int, int)} method, which
  * reads the double value stored from the default binary format.
  */
 public class LazyDioDouble extends LazyDouble {
@@ -52,12 +51,12 @@ public class LazyDioDouble extends LazyDouble {
    *        (org.apache.hadoop.hive.serde2.lazy.ByteArrayRef, int, int)
    */
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
 
     double value = 0.0;
 
     try {
-      in = new ByteStream.Input(bytes.getData(), start, length);
+      in = new ByteStream.Input(bytes, start, length);
       din = new DataInputStream(in);
       value = din.readDouble();
       data.set(value);

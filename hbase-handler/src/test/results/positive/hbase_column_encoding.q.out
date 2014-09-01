@@ -1,0 +1,62 @@
+PREHOOK: query: create table encode_test1(id INT, name STRING, phone STRING, address STRING)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES (
+'hbase.columns.mapping' = ':key,private:name,private:phone,private:address',
+'column.encode.columns'='phone,address', 'column.encode.classname'='org.apache.hadoop.hive.serde2.Base64WriteOnly')
+PREHOOK: type: CREATETABLE
+PREHOOK: Output: database:default
+PREHOOK: Output: default@encode_test1
+POSTHOOK: query: create table encode_test1(id INT, name STRING, phone STRING, address STRING)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES (
+'hbase.columns.mapping' = ':key,private:name,private:phone,private:address',
+'column.encode.columns'='phone,address', 'column.encode.classname'='org.apache.hadoop.hive.serde2.Base64WriteOnly')
+POSTHOOK: type: CREATETABLE
+POSTHOOK: Output: database:default
+POSTHOOK: Output: default@encode_test1
+PREHOOK: query: create table encode_test2(id INT, name STRING, phone STRING, address STRING)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES (
+'hbase.columns.mapping' = ':key,private:name,private:phone,private:address',
+'column.encode.indices'='2,3', 'column.encode.classname'='org.apache.hadoop.hive.serde2.Base64Rewriter')
+PREHOOK: type: CREATETABLE
+PREHOOK: Output: database:default
+PREHOOK: Output: default@encode_test2
+POSTHOOK: query: create table encode_test2(id INT, name STRING, phone STRING, address STRING)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES (
+'hbase.columns.mapping' = ':key,private:name,private:phone,private:address',
+'column.encode.indices'='2,3', 'column.encode.classname'='org.apache.hadoop.hive.serde2.Base64Rewriter')
+POSTHOOK: type: CREATETABLE
+POSTHOOK: Output: database:default
+POSTHOOK: Output: default@encode_test2
+PREHOOK: query: from src tablesample (2 rows)
+insert into table encode_test1 select key,'navis',concat('010-0000-', key), concat('Seoul.', value)
+insert into table encode_test2 select key,'navis',concat('010-0000-', key), concat('Seoul.', value)
+PREHOOK: type: QUERY
+PREHOOK: Input: default@src
+PREHOOK: Output: default@encode_test1
+PREHOOK: Output: default@encode_test2
+POSTHOOK: query: from src tablesample (2 rows)
+insert into table encode_test1 select key,'navis',concat('010-0000-', key), concat('Seoul.', value)
+insert into table encode_test2 select key,'navis',concat('010-0000-', key), concat('Seoul.', value)
+POSTHOOK: type: QUERY
+POSTHOOK: Input: default@src
+POSTHOOK: Output: default@encode_test1
+POSTHOOK: Output: default@encode_test2
+PREHOOK: query: select * from encode_test1
+PREHOOK: type: QUERY
+PREHOOK: Input: default@encode_test1
+#### A masked pattern was here ####
+POSTHOOK: query: select * from encode_test1
+POSTHOOK: type: QUERY
+POSTHOOK: Input: default@encode_test1
+#### A masked pattern was here ####
+238	navis	MDEwLTAwMDAtMjM4	U2VvdWwudmFsXzIzOA==
+86	navis	MDEwLTAwMDAtODY=	U2VvdWwudmFsXzg2
+PREHOOK: query: select * from encode_test2
+PREHOOK: type: QUERY
+PREHOOK: Input: default@encode_test2
+#### A masked pattern was here ####
+POSTHOOK: query: select * from encode_test2
+POSTHOOK: type: QUERY
+POSTHOOK: Input: default@encode_test2
+#### A masked pattern was here ####
+238	navis	010-0000-238	Seoul.val_238
+86	navis	010-0000-86	Seoul.val_86

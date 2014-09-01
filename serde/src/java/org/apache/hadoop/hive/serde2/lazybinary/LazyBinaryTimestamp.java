@@ -20,7 +20,6 @@ package org.apache.hadoop.hive.serde2.lazybinary;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hive.serde2.io.TimestampWritable;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.WritableTimestampObjectInspector;
 
 /**
@@ -47,11 +46,10 @@ public class LazyBinaryTimestamp extends
    * @param bytes
    * @param start
    * @param length
-   *    If length is 4, no decimal bytes follow, otherwise read following bytes
-   *    as VInt and reverse its value
+ *    If length is 4, no decimal bytes follow, otherwise read following bytes
    */
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
-    data.set(bytes.getData(), start);
+  public void init(byte[] bytes, int start, int length) {
+    data.set(bytes, start);
   }
 }

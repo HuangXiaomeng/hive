@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.hive.hbase;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +27,11 @@ import java.util.NavigableMap;
 
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyFactory;
 import org.apache.hadoop.hive.serde2.lazy.LazyMap;
 import org.apache.hadoop.hive.serde2.lazy.LazyObject;
 import org.apache.hadoop.hive.serde2.lazy.LazyPrimitive;
+import org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe;
 import org.apache.hadoop.hive.serde2.lazy.objectinspector.LazyMapObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.PrimitiveObjectInspector;
@@ -46,12 +47,20 @@ public class LazyHBaseCellMap extends LazyMap {
   private byte[] qualPrefix;
   private List<Boolean> binaryStorage;
 
+  private int index;
+  private LazySimpleSerDe.SerDeParameters serdeParams;
+
   /**
    * Construct a LazyCellMap object with the ObjectInspector.
    * @param oi
    */
-  public LazyHBaseCellMap(LazyMapObjectInspector oi) {
+  public LazyHBaseCellMap(int index, LazyMapObjectInspector oi) {
     super(oi);
+    this.index = index;
+  }
+
+  public void setSerdeParams(LazySimpleSerDe.SerDeParameters serdeParams) {
+    this.serdeParams = serdeParams;
   }
 
   public void init(
@@ -105,18 +114,26 @@ public class LazyHBaseCellMap extends LazyMap {
               (PrimitiveObjectInspector) lazyMoi.getMapKeyObjectInspector(),
               binaryStorage.get(0));
 
-        ByteArrayRef keyRef = new ByteArrayRef();
-        keyRef.setData(e.getKey());
-        key.init(keyRef, 0, keyRef.getData().length);
+        byte[] bkey = e.getKey();
+        key.init(bkey, 0, bkey.length);
 
         // Value
         LazyObject<?> value =
           LazyFactory.createLazyObject(lazyMoi.getMapValueObjectInspector(),
               binaryStorage.get(1));
 
-        ByteArrayRef valueRef = new ByteArrayRef();
-        valueRef.setData(e.getValue());
-        value.init(valueRef, 0, valueRef.getData().length);
+        byte[] bvalue = e.getValue();
+        int length = bvalue.length;
+        if (serdeParams != null && serdeParams.rewriter != null) {
+          try {
+            serdeParams.decode(index, bvalue, 0, length);
+          } catch (IOException ioe) {
+            throw new RuntimeException(ioe);
+          }
+          bvalue = serdeParams.output.getData();
+          length = serdeParams.output.getCount();
+        }
+        value.init(bvalue, 0, length);
 
         // Put the key/value into the map
         cachedMap.put(key.getObject(), value.getObject());

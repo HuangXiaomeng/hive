@@ -11,7 +11,6 @@ import org.apache.hadoop.hive.accumulo.columns.HiveAccumuloMapColumnMapping;
 import org.apache.hadoop.hive.accumulo.columns.HiveAccumuloRowIdColumnMapping;
 import org.apache.hadoop.hive.accumulo.serde.AccumuloRowIdFactory;
 import org.apache.hadoop.hive.serde2.SerDeException;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyFactory;
 import org.apache.hadoop.hive.serde2.lazy.LazyObjectBase;
 import org.apache.hadoop.hive.serde2.lazy.LazyStruct;
@@ -70,9 +69,9 @@ public class LazyAccumuloRow extends LazyStruct {
    */
   private Object uncheckedGetField(int id) {
     if (!getFieldInited()[id]) {
-      ByteArrayRef ref;
       ColumnMapping columnMapping = columnMappings.get(id);
 
+      byte[] bytes;
       if (columnMapping instanceof HiveAccumuloMapColumnMapping) {
         HiveAccumuloMapColumnMapping mapColumnMapping = (HiveAccumuloMapColumnMapping) columnMapping;
 
@@ -81,19 +80,16 @@ public class LazyAccumuloRow extends LazyStruct {
       } else {
         if (columnMapping instanceof HiveAccumuloRowIdColumnMapping) {
           // Use the rowID directly
-          ref = new ByteArrayRef();
-          ref.setData(row.getRowId().getBytes());
+          bytes = row.getRowId().getBytes();
         } else if (columnMapping instanceof HiveAccumuloColumnMapping) {
           HiveAccumuloColumnMapping accumuloColumnMapping = (HiveAccumuloColumnMapping) columnMapping;
 
           // Use the colfam and colqual to get the value
-          byte[] val = row.getValue(new Text(accumuloColumnMapping.getColumnFamily()), new Text(
-              accumuloColumnMapping.getColumnQualifier()));
-          if (val == null) {
+          bytes = row.getValue(
+              new Text(accumuloColumnMapping.getColumnFamilyBytes()),
+              new Text(accumuloColumnMapping.getColumnQualifierBytes()));
+          if (bytes == null) {
             return null;
-          } else {
-            ref = new ByteArrayRef();
-            ref.setData(val);
           }
         } else {
           log.error("Could not process ColumnMapping of type " + columnMapping.getClass()
@@ -102,7 +98,9 @@ public class LazyAccumuloRow extends LazyStruct {
               + columnMapping.getClass());
         }
 
-        getFields()[id].init(ref, 0, ref.getData().length);
+        if (bytes != null) {
+          getFields()[id].init(bytes, 0, bytes.length);
+        }
       }
 
       // HIVE-3179 only init the field when it isn't null
@@ -125,8 +123,8 @@ public class LazyAccumuloRow extends LazyStruct {
   }
 
   @Override
-  protected LazyObjectBase createLazyField(int fieldID, StructField fieldRef) throws SerDeException {
-    final ColumnMapping columnMapping = columnMappings.get(fieldID);
+  protected LazyObjectBase createLazyField(StructField fieldRef) throws SerDeException {
+    final ColumnMapping columnMapping = columnMappings.get(fieldRef.getFieldID());
 
     if (columnMapping instanceof HiveAccumuloRowIdColumnMapping) {
       return rowIdFactory.createRowId(fieldRef.getFieldObjectInspector());

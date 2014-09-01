@@ -47,25 +47,25 @@ public class LazyBoolean extends
   }
 
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
-    if (length == 4 && Character.toUpperCase(bytes.getData()[start]) == 'T'
-        && Character.toUpperCase(bytes.getData()[start + 1]) == 'R'
-        && Character.toUpperCase(bytes.getData()[start + 2]) == 'U'
-        && Character.toUpperCase(bytes.getData()[start + 3]) == 'E') {
+  public void init(byte[] bytes, int start, int length) {
+    if (length == 4 && Character.toUpperCase(bytes[start]) == 'T'
+        && Character.toUpperCase(bytes[start + 1]) == 'R'
+        && Character.toUpperCase(bytes[start + 2]) == 'U'
+        && Character.toUpperCase(bytes[start + 3]) == 'E') {
       data.set(true);
       isNull = false;
     } else if (length == 5
-        && Character.toUpperCase(bytes.getData()[start]) == 'F'
-        && Character.toUpperCase(bytes.getData()[start + 1]) == 'A'
-        && Character.toUpperCase(bytes.getData()[start + 2]) == 'L'
-        && Character.toUpperCase(bytes.getData()[start + 3]) == 'S'
-        && Character.toUpperCase(bytes.getData()[start + 4]) == 'E') {
+        && Character.toUpperCase(bytes[start]) == 'F'
+        && Character.toUpperCase(bytes[start + 1]) == 'A'
+        && Character.toUpperCase(bytes[start + 2]) == 'L'
+        && Character.toUpperCase(bytes[start + 3]) == 'S'
+        && Character.toUpperCase(bytes[start + 4]) == 'E') {
       data.set(false);
       isNull = false;
     } else {
       if (oi.isExtendedLiteral()) {
         if (length == 1) {
-          byte c = bytes.getData()[start];
+          byte c = bytes[start];
           if (c == '1' || c == 't' || c == 'T') {
             data.set(true);
             isNull = false;

@@ -15,26 +15,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.hive.serde2.lazybinary;
 
-import org.apache.hadoop.hive.serde2.objectinspector.primitive.WritableVoidObjectInspector;
-import org.apache.hadoop.io.Writable;
+package org.apache.hadoop.hive.serde2;
 
-/**
- * LazyBinaryVoid for NULL which is a placeholder class and it does not need to store any data.
- */
-public class LazyBinaryVoid extends
-    LazyBinaryPrimitive<WritableVoidObjectInspector, Writable> {
+import org.apache.hadoop.hive.serde2.typeinfo.TypeInfo;
 
-  LazyBinaryVoid(WritableVoidObjectInspector oi) {
-    super(oi);
-  }
+import java.io.IOException;
+import java.util.List;
+import java.util.Properties;
 
-  LazyBinaryVoid(LazyBinaryVoid copy) {
-    super(copy);
+public class AbstractFieldRewriter implements FieldRewriter {
+
+  @Override
+  public void init(List<String> columnNames, List<TypeInfo> columnTypes, Properties properties)
+      throws IOException {
   }
 
   @Override
-  public void init(byte[] bytes, int start, int length) {
+  public void encode(int index, ByteStream.Input input, ByteStream.Output output)
+      throws IOException {
+    output.write(input.toBytes());
+  }
+
+  @Override
+  public void decode(int index, ByteStream.Input input, ByteStream.Output output)
+      throws IOException {
+    output.write(input.toBytes());
   }
 }

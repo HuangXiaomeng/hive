@@ -69,8 +69,10 @@ public class MapJoinMemoryExhaustionHandler {
     }
     percentageNumberFormat = NumberFormat.getInstance();
     percentageNumberFormat.setMinimumFractionDigits(2);
-    LOG.info("JVM Max Heap Size: " + this.maxHeapSize);
+    LOG.info("JVM Max Heap Size: " + maxHeapSize +
+        " with threshold " + (maxHeapSize * maxMemoryUsage));
   }
+
   /**
    * Throws MapJoinMemoryExhaustionException when the JVM has consumed the
    * configured percentage of memory. The arguments are used simply for the error

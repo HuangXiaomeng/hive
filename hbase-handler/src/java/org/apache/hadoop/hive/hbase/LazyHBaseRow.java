@@ -18,13 +18,13 @@
 
 package org.apache.hadoop.hive.hbase;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hive.hbase.ColumnMappings.ColumnMapping;
 import org.apache.hadoop.hive.serde2.SerDeException;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyFactory;
 import org.apache.hadoop.hive.serde2.lazy.LazyObjectBase;
 import org.apache.hadoop.hive.serde2.lazy.LazyStruct;
@@ -72,14 +72,16 @@ public class LazyHBaseRow extends LazyStruct {
   }
 
   @Override
-  protected LazyObjectBase createLazyField(int fieldID, StructField fieldRef) throws SerDeException {
+  protected LazyObjectBase createLazyField(StructField fieldRef) throws SerDeException {
+    int fieldID = fieldRef.getFieldID();
     if (fieldID == iKey) {
       return keyFactory.createKey(fieldRef.getFieldObjectInspector());
     }
     ColumnMapping colMap = columnsMapping[fieldID];
     if (colMap.qualifierName == null && !colMap.hbaseRowKey) {
       // a column family
-      return new LazyHBaseCellMap((LazyMapObjectInspector) fieldRef.getFieldObjectInspector());
+      return new LazyHBaseCellMap(fieldID,
+          (LazyMapObjectInspector) fieldRef.getFieldObjectInspector());
     }
     return LazyFactory.createLazyObject(fieldRef.getFieldObjectInspector(),
         colMap.binaryStorage.get(0));
@@ -126,12 +128,11 @@ public class LazyHBaseRow extends LazyStruct {
     boolean [] fieldsInited = getFieldInited();
 
     if (!fieldsInited[fieldID]) {
-      ByteArrayRef ref = null;
       ColumnMapping colMap = columnsMapping[fieldID];
 
+      byte[] bytes = null;
       if (colMap.hbaseRowKey) {
-        ref = new ByteArrayRef();
-        ref.setData(result.getRow());
+        bytes = result.getRow();
       } else {
         if (colMap.qualifierName == null) {
           // it is a column family
@@ -142,19 +143,25 @@ public class LazyHBaseRow extends LazyStruct {
               result, colMap.familyNameBytes, colMap.binaryStorage, colMap.qualifierPrefixBytes);
         } else {
           // it is a column i.e. a column-family with column-qualifier
-          byte [] res = result.getValue(colMap.familyNameBytes, colMap.qualifierNameBytes);
-
-          if (res == null) {
+          bytes = result.getValue(colMap.familyNameBytes, colMap.qualifierNameBytes);
+          if (bytes == null) {
             return null;
-          } else {
-            ref = new ByteArrayRef();
-            ref.setData(res);
           }
         }
       }
+      int length = bytes == null ? 0 : bytes.length;
+      if (bytes != null && serdeParams != null && serdeParams.isEncoded(fieldID)) {
+        try {
+          serdeParams.decode(fieldID, bytes, 0, bytes.length);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+        bytes = serdeParams.output.getData();
+        length = serdeParams.output.getCount();
+      }
 
-      if (ref != null) {
-        fields[fieldID].init(ref, 0, ref.getData().length);
+      if (bytes != null) {
+        fields[fieldID].init(bytes, 0, length);
       }
     }
 

@@ -40,9 +40,6 @@ public abstract class LazyObject<OI extends ObjectInspector> implements LazyObje
     this.oi = oi;
   }
 
-  @Override
-  public abstract int hashCode();
-
   protected OI getInspector() {
     return oi;
   }

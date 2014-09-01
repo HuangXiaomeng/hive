@@ -47,9 +47,9 @@ public class LazyByte extends
   }
 
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
     try {
-      data.set(parseByte(bytes.getData(), start, length, 10));
+      data.set(parseByte(bytes, start, length, 10));
       isNull = false;
     } catch (NumberFormatException e) {
       isNull = true;

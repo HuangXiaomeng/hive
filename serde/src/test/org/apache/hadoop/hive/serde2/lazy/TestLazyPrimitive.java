@@ -44,9 +44,7 @@ public class TestLazyPrimitive extends TestCase {
    */
   public static void initLazyObject(LazyObject lo, byte[] data, int start,
       int length) {
-    ByteArrayRef b = new ByteArrayRef();
-    b.setData(data);
-    lo.init(b, start, length);
+    lo.init(data, start, length);
   }
 
   /**

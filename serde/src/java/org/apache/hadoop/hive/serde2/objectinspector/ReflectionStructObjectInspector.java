@@ -56,18 +56,22 @@ public class ReflectionStructObjectInspector extends
       this.fieldObjectInspector = fieldObjectInspector;
     }
 
+    @Override
     public String getFieldName() {
       return field.getName().toLowerCase();
     }
 
+    @Override
     public ObjectInspector getFieldObjectInspector() {
       return fieldObjectInspector;
     }
 
+    @Override
     public int getFieldID() {
       return fieldID;
     }
 
+    @Override
     public String getFieldComment() {
       return null;
     }

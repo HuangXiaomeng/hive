@@ -31,6 +31,6 @@ public class LazyVoid extends LazyPrimitive<LazyVoidObjectInspector, NullWritabl
   }
 
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
   }
 }

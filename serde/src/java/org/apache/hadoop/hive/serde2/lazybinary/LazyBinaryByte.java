@@ -18,7 +18,6 @@
 package org.apache.hadoop.hive.serde2.lazybinary;
 
 import org.apache.hadoop.hive.serde2.io.ByteWritable;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.WritableByteObjectInspector;
 
 /**
@@ -38,8 +37,8 @@ public class LazyBinaryByte extends
   }
 
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
     assert (1 == length);
-    data.set(bytes.getData()[start]);
+    data.set(bytes[start]);
   }
 }

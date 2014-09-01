@@ -18,12 +18,12 @@
 
 package org.apache.hadoop.hive.hbase;
 
+import java.util.Arrays;
+import java.util.Properties;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.objectinspector.LazySimpleStructObjectInspector;
-
-import java.util.Properties;
 
 public class HBaseTestCompositeKey extends HBaseCompositeKey {
 
@@ -39,8 +39,8 @@ public class HBaseTestCompositeKey extends HBaseCompositeKey {
   }
 
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
-    this.bytes = bytes.getData();
+  public void init(byte[] bytes, int start, int length) {
+    this.bytes = Arrays.copyOfRange(bytes, start, start + length);
   }
 
   @Override

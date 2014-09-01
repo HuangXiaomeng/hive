@@ -66,10 +66,10 @@ public class LazyHiveDecimal extends LazyPrimitive<LazyHiveDecimalObjectInspecto
    * @param length
    */
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
     String byteData = null;
     try {
-      byteData = Text.decode(bytes.getData(), start, length);
+      byteData = Text.decode(bytes, start, length);
     } catch (CharacterCodingException e) {
       isNull = true;
       LOG.debug("Data not in the HiveDecimal data type range so converted to null.", e);

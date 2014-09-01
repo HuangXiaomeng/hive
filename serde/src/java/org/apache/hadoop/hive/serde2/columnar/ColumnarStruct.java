@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyFactory;
 import org.apache.hadoop.hive.serde2.lazy.LazyObjectBase;
 import org.apache.hadoop.hive.serde2.lazy.LazyUtils;
@@ -61,11 +60,10 @@ public class ColumnarStruct extends ColumnarStructBase {
   }
 
   @Override
-  protected int getLength(ObjectInspector objectInspector, ByteArrayRef cachedByteArrayRef,
+  protected int getLength(ObjectInspector objectInspector, byte[] bytes,
       int start, int fieldLen) {
     if (fieldLen == lengthNullSequence) {
-      byte[] data = cachedByteArrayRef.getData();
-      if (LazyUtils.compare(data, start, fieldLen,
+      if (LazyUtils.compare(bytes, start, fieldLen,
           nullSequence.getBytes(), 0, lengthNullSequence) == 0) {
         return -1;
       }

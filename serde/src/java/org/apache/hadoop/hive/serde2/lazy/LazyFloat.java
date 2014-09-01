@@ -44,10 +44,10 @@ public class LazyFloat extends
   }
 
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
     String byteData = null;
     try {
-      byteData = Text.decode(bytes.getData(), start, length);
+      byteData = Text.decode(bytes, start, length);
       data.set(Float.parseFloat(byteData));
       isNull = false;
     } catch (NumberFormatException e) {

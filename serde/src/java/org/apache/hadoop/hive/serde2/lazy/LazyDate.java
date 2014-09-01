@@ -57,10 +57,10 @@ public class LazyDate extends LazyPrimitive<LazyDateObjectInspector, DateWritabl
    * @param length
    */
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
     String s = null;
     try {
-      s = Text.decode(bytes.getData(), start, length);
+      s = Text.decode(bytes, start, length);
       data.set(Date.valueOf(s));
       isNull = false;
     } catch (Exception e) {

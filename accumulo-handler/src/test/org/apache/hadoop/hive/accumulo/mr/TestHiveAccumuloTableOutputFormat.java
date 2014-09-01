@@ -41,7 +41,6 @@ import org.apache.hadoop.hive.accumulo.serde.AccumuloRowSerializer;
 import org.apache.hadoop.hive.accumulo.serde.AccumuloSerDe;
 import org.apache.hadoop.hive.accumulo.serde.AccumuloSerDeParameters;
 import org.apache.hadoop.hive.serde.serdeConstants;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyFactory;
 import org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe.SerDeParameters;
 import org.apache.hadoop.hive.serde2.lazy.LazyStruct;
@@ -167,9 +166,8 @@ public class TestHiveAccumuloTableOutputFormat {
 
     LazyStruct struct = (LazyStruct) LazyFactory.createLazyObject(structOI);
 
-    ByteArrayRef bytes = new ByteArrayRef();
-    bytes.setData("row value1 value2".getBytes());
-    struct.init(bytes, 0, bytes.getData().length);
+    byte[] value = "row value1 value2".getBytes();
+    struct.init(value, 0, value.length);
 
     // Serialize the struct into a mutation
     Mutation m = serializer.serialize(struct, structOI);
@@ -258,9 +256,8 @@ public class TestHiveAccumuloTableOutputFormat {
 
     LazyStruct struct = (LazyStruct) LazyFactory.createLazyObject(structOI);
 
-    ByteArrayRef bytes = new ByteArrayRef();
-    bytes.setData("row value1 value2".getBytes());
-    struct.init(bytes, 0, bytes.getData().length);
+    byte[] value = "row value1 value2".getBytes();
+    struct.init(value, 0, value.length);
 
     // Serialize the struct into a mutation
     Mutation m = serializer.serialize(struct, structOI);
@@ -355,9 +352,8 @@ public class TestHiveAccumuloTableOutputFormat {
 
     LazyStruct struct = (LazyStruct) LazyFactory.createLazyObject(structOI);
 
-    ByteArrayRef bytes = new ByteArrayRef();
-    bytes.setData("row cq1:value1,cq2:value2".getBytes());
-    struct.init(bytes, 0, bytes.getData().length);
+    byte[] value = "row cq1:value1,cq2:value2".getBytes();
+    struct.init(value, 0, value.length);
 
     // Serialize the struct into a mutation
     Mutation m = serializer.serialize(struct, structOI);
@@ -449,9 +445,8 @@ public class TestHiveAccumuloTableOutputFormat {
 
     LazyStruct struct = (LazyStruct) LazyFactory.createLazyObject(structOI);
 
-    ByteArrayRef bytes = new ByteArrayRef();
-    bytes.setData("row value1 value2".getBytes());
-    struct.init(bytes, 0, bytes.getData().length);
+    byte[] value = "row value1 value2".getBytes();
+    struct.init(value, 0, value.length);
 
     // Serialize the struct into a mutation
     Mutation m = serializer.serialize(struct, structOI);

@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Properties;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.objectinspector.LazySimpleStructObjectInspector;
 import org.apache.hadoop.util.StringUtils;
 import org.apache.log4j.Logger;
@@ -45,8 +44,8 @@ public class FirstCharAccumuloCompositeRowId extends AccumuloCompositeRowId {
   }
 
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
-    this.bytes = bytes.getData();
+  public void init(byte[] bytes, int start, int length) {
+    this.bytes = bytes;
     this.start = start;
     this.length = length;
   }

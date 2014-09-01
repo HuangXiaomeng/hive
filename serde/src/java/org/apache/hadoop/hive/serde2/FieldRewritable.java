@@ -15,26 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.hive.serde2.lazybinary;
 
-import org.apache.hadoop.hive.serde2.objectinspector.primitive.WritableVoidObjectInspector;
-import org.apache.hadoop.io.Writable;
+package org.apache.hadoop.hive.serde2;
 
 /**
- * LazyBinaryVoid for NULL which is a placeholder class and it does not need to store any data.
+ * marker interface for serde supporting field rewriting. see LazySimpleSerde
+ *   serdeConstants.COLUMN_ENCODE_INDICES : column indices to be rewritten
+ *   serdeConstants.COLUMN_ENCODE_CLASSNAME : column rewriter implementing FieldRewriter
  */
-public class LazyBinaryVoid extends
-    LazyBinaryPrimitive<WritableVoidObjectInspector, Writable> {
-
-  LazyBinaryVoid(WritableVoidObjectInspector oi) {
-    super(oi);
-  }
-
-  LazyBinaryVoid(LazyBinaryVoid copy) {
-    super(copy);
-  }
-
-  @Override
-  public void init(byte[] bytes, int start, int length) {
-  }
+public interface FieldRewritable {
 }

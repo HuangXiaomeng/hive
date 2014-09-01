@@ -63,10 +63,10 @@ public class LazyUnion extends
   /**
    * Set the row data for this LazyUnion.
    *
-   * @see LazyObject#init(ByteArrayRef, int, int)
+   * @see LazyObjectBase#init(byte[], int, int)
    */
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
     super.init(bytes, start, length);
     parsed = false;
   }
@@ -87,7 +87,6 @@ public class LazyUnion extends
 
     int unionByteEnd = start + length;
     int fieldByteEnd = start;
-    byte[] bytes = this.bytes.getData();
     // Go through all bytes in the byte[]
     while (fieldByteEnd < unionByteEnd) {
       if (bytes[fieldByteEnd] != separator) {
@@ -127,7 +126,7 @@ public class LazyUnion extends
     Text nullSequence = oi.getNullSequence();
     int fieldLength = start + length - startPosition;
     if (fieldLength != 0 && fieldLength == nullSequence.getLength() &&
-        LazyUtils.compare(bytes.getData(), startPosition, fieldLength,
+        LazyUtils.compare(bytes, startPosition, fieldLength,
         nullSequence.getBytes(), 0, nullSequence.getLength()) == 0) {
       return null;
     }

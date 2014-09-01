@@ -27,24 +27,19 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hive.common.type.Decimal128;
-import org.apache.hadoop.hive.common.type.HiveDecimal;
 import org.apache.hadoop.hive.serde.serdeConstants;
 import org.apache.hadoop.hive.serde2.AbstractSerDe;
 import org.apache.hadoop.hive.serde2.ByteStream;
-import org.apache.hadoop.hive.serde2.ByteStream.Output;
 import org.apache.hadoop.hive.serde2.ByteStream.RandomAccessOutput;
 import org.apache.hadoop.hive.serde2.SerDeException;
 import org.apache.hadoop.hive.serde2.SerDeStats;
 import org.apache.hadoop.hive.serde2.io.DateWritable;
 import org.apache.hadoop.hive.serde2.io.HiveDecimalWritable;
 import org.apache.hadoop.hive.serde2.io.TimestampWritable;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.objectinspector.ListObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.MapObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector.Category;
-import org.apache.hadoop.hive.serde2.objectinspector.PrimitiveObjectInspector.PrimitiveCategory;
 import org.apache.hadoop.hive.serde2.objectinspector.PrimitiveObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.StructField;
 import org.apache.hadoop.hive.serde2.objectinspector.StructObjectInspector;
@@ -151,23 +146,16 @@ public class LazyBinarySerDe extends AbstractSerDe {
     return BytesWritable.class;
   }
 
-  // The wrapper for byte array
-  ByteArrayRef byteArrayRef;
-
   /**
    * Deserialize a table record to a lazybinary struct.
    */
   @Override
   public Object deserialize(Writable field) throws SerDeException {
-    if (byteArrayRef == null) {
-      byteArrayRef = new ByteArrayRef();
-    }
     BinaryComparable b = (BinaryComparable) field;
     if (b.getLength() == 0) {
       return null;
     }
-    byteArrayRef.setData(b.getBytes());
-    cachedLazyBinaryStruct.init(byteArrayRef, 0, b.getLength());
+    cachedLazyBinaryStruct.init(b.getBytes(), 0, b.getLength());
     lastOperationSerialize = false;
     lastOperationDeserialize = true;
     return cachedLazyBinaryStruct;

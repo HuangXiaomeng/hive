@@ -17,7 +17,6 @@
  */
 package org.apache.hadoop.hive.serde2.lazybinary;
 
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyUtils;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 
@@ -29,7 +28,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 public abstract class LazyBinaryNonPrimitive<OI extends ObjectInspector>
     extends LazyBinaryObject<OI> {
 
-  protected ByteArrayRef bytes;
+  protected byte[] bytes;
   protected int start;
   protected int length;
 
@@ -46,7 +45,7 @@ public abstract class LazyBinaryNonPrimitive<OI extends ObjectInspector>
   }
 
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
     if (null == bytes) {
       throw new RuntimeException("bytes cannot be null!");
     }
@@ -60,6 +59,6 @@ public abstract class LazyBinaryNonPrimitive<OI extends ObjectInspector>
 
   @Override
   public int hashCode() {
-    return LazyUtils.hashBytes(bytes.getData(), start, length);
+    return LazyUtils.hashBytes(bytes, start, length);
   }
 }

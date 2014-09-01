@@ -17,7 +17,6 @@
  */
 package org.apache.hadoop.hive.serde2.lazybinary;
 
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.WritableBooleanObjectInspector;
 import org.apache.hadoop.io.BooleanWritable;
 
@@ -48,9 +47,9 @@ public class LazyBinaryBoolean extends
   }
 
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
     assert (1 == length);
-    byte val = bytes.getData()[start];
+    byte val = bytes[start];
     if (val == 0) {
       data.set(false);
     } else if (val == 1) {

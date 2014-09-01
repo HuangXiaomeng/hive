@@ -35,7 +35,9 @@ public interface StructField {
   ObjectInspector getFieldObjectInspector();
 
   /**
-   * Get the fieldID for the field.
+   * Get the fieldID for the field
+   *
+   * @return
    */
   int getFieldID();
 

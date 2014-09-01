@@ -37,7 +37,6 @@ import org.apache.hadoop.hive.serde2.SerDeUtils;
 import org.apache.hadoop.hive.serde2.binarysortable.MyTestClass;
 import org.apache.hadoop.hive.serde2.binarysortable.MyTestInnerStruct;
 import org.apache.hadoop.hive.serde2.binarysortable.TestBinarySortableSerDe;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyBinary;
 import org.apache.hadoop.hive.serde2.lazy.LazyFactory;
 import org.apache.hadoop.hive.serde2.lazy.objectinspector.primitive.AbstractPrimitiveLazyObjectInspector;
@@ -48,7 +47,6 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorFactory;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorFactory.ObjectInspectorOptions;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorUtils;
-import org.apache.hadoop.hive.serde2.objectinspector.PrimitiveObjectInspector.PrimitiveCategory;
 import org.apache.hadoop.hive.serde2.objectinspector.StructField;
 import org.apache.hadoop.hive.serde2.objectinspector.StructObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.JavaBinaryObjectInspector;
@@ -600,15 +598,12 @@ public class TestLazyBinarySerDe extends TestCase {
   public void testLazyBinaryObjectInspector() throws Throwable {
 
     //create input ByteArrayRef
-    ByteArrayRef inpBARef = new ByteArrayRef();
-    inpBARef.setData(inpBArray);
-
     AbstractPrimitiveLazyObjectInspector<?> binInspector = LazyPrimitiveObjectInspectorFactory
     .getLazyObjectInspector(TypeInfoFactory.binaryTypeInfo, false, (byte)0);
 
     //create LazyBinary initialed with inputBA
     LazyBinary lazyBin = (LazyBinary) LazyFactory.createLazyObject(binInspector);
-    lazyBin.init(inpBARef, 0, inpBArray.length);
+    lazyBin.init(inpBArray, 0, inpBArray.length);
 
     //use inspector to get a byte[] out of LazyBinary
     byte[] outBARef = (byte[]) binInspector.getPrimitiveJavaObject(lazyBin);

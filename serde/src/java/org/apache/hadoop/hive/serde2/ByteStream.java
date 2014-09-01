@@ -23,6 +23,8 @@ import java.io.IOException;
 import org.apache.hadoop.hive.common.io.NonSyncByteArrayInputStream;
 import org.apache.hadoop.hive.common.io.NonSyncByteArrayOutputStream;
 
+import java.util.Arrays;
+
 /**
  * Extensions to bytearrayinput/output streams.
  */
@@ -44,6 +46,10 @@ public class ByteStream {
       buf = argBuf;
       mark = pos = 0;
       count = argCount;
+    }
+
+    public byte[] toBytes() {
+      return Arrays.copyOfRange(buf, pos, count);
     }
 
     public Input() {
@@ -76,6 +82,15 @@ public class ByteStream {
 
     public Output(int size) {
       super(size);
+    }
+
+    public int getCount() {
+      return count;
+    }
+
+    public void writeTo(int pos, Output output) {
+      count = pos;
+      write(output.buf, 0, output.count);
     }
 
     @Override

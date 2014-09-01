@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.ql.exec.vector.VectorizedRowBatch;
 import org.apache.hadoop.hive.ql.exec.vector.VectorizedSerde;
-import org.apache.hadoop.hive.serde2.SerDe;
+import org.apache.hadoop.hive.serde2.AbstractSerDe;
 import org.apache.hadoop.hive.serde2.SerDeException;
 import org.apache.hadoop.hive.serde2.SerDeStats;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
@@ -40,7 +40,7 @@ import org.apache.hadoop.io.Writable;
  * A serde class for ORC.
  * It transparently passes the object to/from the ORC file reader/writer.
  */
-public class OrcSerde implements SerDe, VectorizedSerde {
+public class OrcSerde extends AbstractSerDe implements VectorizedSerde {
 
   private static final Log LOG = LogFactory.getLog(OrcSerde.class);
 

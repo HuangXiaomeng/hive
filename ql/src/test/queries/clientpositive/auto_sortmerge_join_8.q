@@ -33,6 +33,7 @@ select count(*) FROM bucket_big a JOIN bucket_small b ON a.key = b.key;
 
 set hive.auto.convert.sortmerge.join.to.mapjoin=true;
 set hive.mapjoin.localtask.max.memory.usage = 0.0001;
+set hive.mapjoin.followby.gby.localtask.max.memory.usage = 0.0001;
 set hive.mapjoin.check.memory.rows = 2;
 
 -- The mapjoin should fail resulting in the sort-merge join

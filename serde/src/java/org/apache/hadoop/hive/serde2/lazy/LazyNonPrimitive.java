@@ -25,7 +25,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 public abstract class LazyNonPrimitive<OI extends ObjectInspector> extends
     LazyObject<OI> {
 
-  protected ByteArrayRef bytes;
+  protected byte[] bytes;
   protected int start;
   protected int length;
 
@@ -48,7 +48,7 @@ public abstract class LazyNonPrimitive<OI extends ObjectInspector> extends
   }
 
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
     if (bytes == null) {
       throw new RuntimeException("bytes cannot be null!");
     }
@@ -56,7 +56,7 @@ public abstract class LazyNonPrimitive<OI extends ObjectInspector> extends
     this.start = start;
     this.length = length;
     assert start >= 0;
-    assert start + length <= bytes.getData().length;
+    assert start + length <= bytes.length;
   }
 
   @Override
@@ -66,6 +66,6 @@ public abstract class LazyNonPrimitive<OI extends ObjectInspector> extends
 
   @Override
   public int hashCode() {
-    return LazyUtils.hashBytes(bytes.getData(), start, length);
+    return LazyUtils.hashBytes(bytes, start, length);
   }
 }

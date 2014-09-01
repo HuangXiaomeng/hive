@@ -22,7 +22,6 @@ import java.util.Map;
 import org.apache.hadoop.hive.accumulo.AccumuloHiveRow.ColumnTuple;
 import org.apache.hadoop.hive.accumulo.columns.ColumnEncoding;
 import org.apache.hadoop.hive.accumulo.columns.HiveAccumuloMapColumnMapping;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyFactory;
 import org.apache.hadoop.hive.serde2.lazy.LazyMap;
 import org.apache.hadoop.hive.serde2.lazy.LazyObject;
@@ -82,17 +81,15 @@ public class LazyAccumuloMap extends LazyMap {
           .createLazyPrimitiveClass((PrimitiveObjectInspector) lazyMoi.getMapKeyObjectInspector(),
               ColumnEncoding.BINARY == columnMapping.getKeyEncoding());
 
-      ByteArrayRef keyRef = new ByteArrayRef();
-      keyRef.setData(cq.getBytes(Charsets.UTF_8));
-      key.init(keyRef, 0, keyRef.getData().length);
+      byte[] bytes = cq.getBytes(Charsets.UTF_8);
+      key.init(bytes, 0, bytes.length);
 
       // Value can be anything, use the obj inspector and respect binary
       LazyObject<?> value = LazyFactory.createLazyObject(lazyMoi.getMapValueObjectInspector(),
           ColumnEncoding.BINARY == columnMapping.getValueEncoding());
 
-      ByteArrayRef valueRef = new ByteArrayRef();
-      valueRef.setData(tuple.getValue());
-      value.init(valueRef, 0, valueRef.getData().length);
+      bytes = tuple.getValue();
+      value.init(bytes, 0, bytes.length);
 
       cachedMap.put(key, value);
     }

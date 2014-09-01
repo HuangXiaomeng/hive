@@ -17,7 +17,6 @@
  */
 package org.apache.hadoop.hive.serde2.lazybinary;
 
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazybinary.LazyBinaryUtils.VLong;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.WritableLongObjectInspector;
 import org.apache.hadoop.io.LongWritable;
@@ -46,8 +45,8 @@ public class LazyBinaryLong extends
   VLong vLong = new LazyBinaryUtils.VLong();
 
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
-    LazyBinaryUtils.readVLong(bytes.getData(), start, vLong);
+  public void init(byte[] bytes, int start, int length) {
+    LazyBinaryUtils.readVLong(bytes, start, vLong);
     assert (length == vLong.length);
     data.set(vLong.value);
   }

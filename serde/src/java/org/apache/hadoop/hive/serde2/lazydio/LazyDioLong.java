@@ -22,13 +22,12 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import org.apache.hadoop.hive.serde2.ByteStream;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyLong;
 import org.apache.hadoop.hive.serde2.lazy.objectinspector.primitive.LazyLongObjectInspector;
 
 /**
  * LazyLongBinary for storing a long value as a LongWritable. This class complements class
- * LazyLong. It's primary difference is the {@link #init(ByteArrayRef, int, int)} method, which
+ * LazyLong. It's primary difference is the {@link #init(byte[], int, int)} method, which
  * reads the long value stored in the default binary format.
  */
 public class LazyDioLong extends LazyLong {
@@ -52,12 +51,12 @@ public class LazyDioLong extends LazyLong {
    *        (org.apache.hadoop.hive.serde2.lazy.ByteArrayRef, int, int)
    */
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
 
     long value = 0;
 
     try {
-      in = new ByteStream.Input(bytes.getData(), start, length);
+      in = new ByteStream.Input(bytes, start, length);
       din = new DataInputStream(in);
       value = din.readLong();
       data.set(value);

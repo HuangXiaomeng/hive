@@ -22,13 +22,12 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import org.apache.hadoop.hive.serde2.ByteStream;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyShort;
 import org.apache.hadoop.hive.serde2.lazy.objectinspector.primitive.LazyShortObjectInspector;
 
 /**
  * LazyShortBinary for storing a short value as a ShortWritable. This class complements class
- * LazyShort. It's primary difference is the {@link #init(ByteArrayRef, int, int)} method, which
+ * LazyShort. It's primary difference is the {@link #init(byte[], int, int)} method, which
  * reads the short value stored from the default binary format.
  */
 public class LazyDioShort extends LazyShort {
@@ -52,12 +51,12 @@ public class LazyDioShort extends LazyShort {
    *        (org.apache.hadoop.hive.serde2.lazy.ByteArrayRef, int, int)
    */
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
 
     short value = 0;
 
     try {
-      in = new ByteStream.Input(bytes.getData(), start, length);
+      in = new ByteStream.Input(bytes, start, length);
       din = new DataInputStream(in);
       value = din.readShort();
       data.set(value);

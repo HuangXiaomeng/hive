@@ -47,9 +47,9 @@ public class LazyShort extends
   }
 
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
     try {
-      data.set(parseShort(bytes.getData(), start, length));
+      data.set(parseShort(bytes, start, length));
       isNull = false;
     } catch (NumberFormatException e) {
       isNull = true;

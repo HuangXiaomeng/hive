@@ -28,6 +28,7 @@ import org.apache.hadoop.hive.serde2.AbstractSerDe;
 import org.apache.hadoop.hive.serde2.SerDeException;
 import org.apache.hadoop.hive.serde2.SerDeStats;
 import org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe;
+import org.apache.hadoop.hive.serde2.FieldRewritable;
 import org.apache.hadoop.hive.serde2.lazy.objectinspector.LazySimpleStructObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 import org.apache.hadoop.io.Writable;
@@ -41,7 +42,7 @@ import java.util.Properties;
  * HBaseSerDe can be used to serialize object into an HBase table and
  * deserialize objects from an HBase table.
  */
-public class HBaseSerDe extends AbstractSerDe {
+public class HBaseSerDe extends AbstractSerDe implements FieldRewritable {
   public static final Log LOG = LogFactory.getLog(HBaseSerDe.class);
 
   public static final String HBASE_COLUMNS_MAPPING = "hbase.columns.mapping";
@@ -89,6 +90,8 @@ public class HBaseSerDe extends AbstractSerDe {
     cachedHBaseRow = new LazyHBaseRow(
         (LazySimpleStructObjectInspector) cachedObjectInspector,
         serdeParams.getKeyIndex(), serdeParams.getKeyFactory());
+
+    cachedHBaseRow.setSerdeParams(serdeParams.getSerdeParams());
 
     serializer = new HBaseRowSerializer(serdeParams);
 

@@ -26,7 +26,6 @@ import org.apache.hadoop.hive.serde2.BaseStructObjectInspector;
 import org.apache.hadoop.hive.serde2.ByteStream;
 import org.apache.hadoop.hive.serde2.Deserializer;
 import org.apache.hadoop.hive.serde2.SerDeException;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyObjectBase;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.StructField;
@@ -205,9 +204,8 @@ public class TestHBaseKeyFactory2 extends AbstractHBaseKeyFactory {
     }
 
     @Override
-    public void init(ByteArrayRef bytes, int start, int length) {
+    public void init(byte[] data, int start, int length) {
       fields.clear();
-      byte[] data = bytes.getData();
       int rowStart = start;
       int rowStop = rowStart + fixedLength;
       for (; rowStart < length; rowStart = rowStop + 1, rowStop = rowStart + fixedLength) {
@@ -236,7 +234,7 @@ public class TestHBaseKeyFactory2 extends AbstractHBaseKeyFactory {
 
     @Override
     public Object getStructFieldData(Object data, StructField fieldRef) {
-      return ((FixedLengthed)data).fields.get(((MyField)fieldRef).getFieldID());
+      return ((FixedLengthed)data).fields.get(fieldRef.getFieldID());
     }
 
     @Override

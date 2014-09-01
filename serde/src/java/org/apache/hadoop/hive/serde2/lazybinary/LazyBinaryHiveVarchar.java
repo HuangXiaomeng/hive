@@ -18,7 +18,6 @@
 package org.apache.hadoop.hive.serde2.lazybinary;
 
 import org.apache.hadoop.hive.serde2.io.HiveVarcharWritable;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.WritableHiveVarcharObjectInspector;
 import org.apache.hadoop.hive.serde2.typeinfo.VarcharTypeInfo;
 import org.apache.hadoop.io.Text;
@@ -41,10 +40,10 @@ public class LazyBinaryHiveVarchar extends
   }
 
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
     // re-use existing text member in varchar writable
     Text textValue = data.getTextValue();
-    textValue.set(bytes.getData(), start, length);
+    textValue.set(bytes, start, length);
     data.enforceMaxLength(maxLength);
   }
 

@@ -33,7 +33,6 @@ import org.apache.hadoop.hive.accumulo.columns.ColumnMapping;
 import org.apache.hadoop.hive.serde.serdeConstants;
 import org.apache.hadoop.hive.serde2.ByteStream;
 import org.apache.hadoop.hive.serde2.SerDeException;
-import org.apache.hadoop.hive.serde2.lazy.ByteArrayRef;
 import org.apache.hadoop.hive.serde2.lazy.LazyFactory;
 import org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe.SerDeParameters;
 import org.apache.hadoop.hive.serde2.lazy.LazyStruct;
@@ -123,10 +122,9 @@ public class TestAccumuloRowSerializer {
     // Create the LazyStruct from the LazyStruct...Inspector
     LazyStruct obj = (LazyStruct) LazyFactory.createLazyObject(oi);
 
-    ByteArrayRef byteRef = new ByteArrayRef();
-    byteRef.setData(new byte[] {'r', 'o', 'w', '1', ' ', '1', '0', ' ', '2', '0', ' ', 'v', 'a',
-        'l', 'u', 'e'});
-    obj.init(byteRef, 0, byteRef.getData().length);
+    byte[] value = new byte[] {'r', 'o', 'w', '1', ' ', '1', '0', ' ', '2', '0', ' ', 'v', 'a',
+        'l', 'u', 'e'};
+    obj.init(value, 0, value.length);
 
     Mutation m = (Mutation) serializer.serialize(obj, oi);
 
@@ -192,10 +190,9 @@ public class TestAccumuloRowSerializer {
     // Create the LazyStruct from the LazyStruct...Inspector
     LazyStruct obj = (LazyStruct) LazyFactory.createLazyObject(oi);
 
-    ByteArrayRef byteRef = new ByteArrayRef();
-    byteRef.setData(new byte[] {'r', 'o', 'w', '1', ' ', '1', '0', ' ', '2', '0', ' ', 'v', 'a',
-        'l', 'u', 'e'});
-    obj.init(byteRef, 0, byteRef.getData().length);
+    byte[] value = new byte[] {'r', 'o', 'w', '1', ' ', '1', '0', ' ', '2', '0', ' ', 'v', 'a',
+        'l', 'u', 'e'};
+    obj.init(value, 0, value.length);
 
     Mutation m = (Mutation) serializer.serialize(obj, oi);
 
@@ -274,9 +271,8 @@ public class TestAccumuloRowSerializer {
     // Create the LazyStruct from the LazyStruct...Inspector
     LazyStruct obj = (LazyStruct) LazyFactory.createLazyObject(structOI);
 
-    ByteArrayRef byteRef = new ByteArrayRef();
-    byteRef.setData("row1 cq1:10,cq2:20,cq3:value".getBytes());
-    obj.init(byteRef, 0, byteRef.getData().length);
+    byte[] value = "row1 cq1:10,cq2:20,cq3:value".getBytes();
+    obj.init(value, 0, value.length);
 
     Mutation m = (Mutation) serializer.serialize(obj, structOI);
 

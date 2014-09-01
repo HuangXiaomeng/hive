@@ -93,10 +93,10 @@ public class LazyMap extends LazyNonPrimitive<LazyMapObjectInspector> {
   /**
    * Set the row data for this LazyArray.
    *
-   * @see LazyObject#init(ByteArrayRef, int, int)
+   * @see LazyObjectBase#init(byte[], int, int)
    */
   @Override
-  public void init(ByteArrayRef bytes, int start, int length) {
+  public void init(byte[] bytes, int start, int length) {
     super.init(bytes, start, length);
     parsed = false;
     cachedMap = null;
@@ -150,7 +150,6 @@ public class LazyMap extends LazyNonPrimitive<LazyMapObjectInspector> {
     int elementByteBegin = start;
     int keyValueSeparatorPosition = -1;
     int elementByteEnd = start;
-    byte[] bytes = this.bytes.getData();
     Set<Object> keySet = new HashSet<Object>();
 
     // Go through all bytes in the byte[]
@@ -265,7 +264,7 @@ public class LazyMap extends LazyNonPrimitive<LazyMapObjectInspector> {
     int valueILength = valueLength[index];
     if (valueILength < 0
         || ((valueILength == nullSequence.getLength()) && 0 == LazyUtils
-        .compare(bytes.getData(), valueIBegin, valueILength, nullSequence
+        .compare(bytes, valueIBegin, valueILength, nullSequence
         .getBytes(), 0, nullSequence.getLength()))) {
       return valueObjects[index] = null;
     }
@@ -292,7 +291,7 @@ public class LazyMap extends LazyNonPrimitive<LazyMapObjectInspector> {
     int keyILength = keyEnd[index] - keyStart[index];
     if (keyILength < 0
         || ((keyILength == nullSequence.getLength()) && 0 == LazyUtils.compare(
-        bytes.getData(), keyIBegin, keyILength, nullSequence.getBytes(), 0,
+        bytes, keyIBegin, keyILength, nullSequence.getBytes(), 0,
         nullSequence.getLength()))) {
       return keyObjects[index] = null;
     }
