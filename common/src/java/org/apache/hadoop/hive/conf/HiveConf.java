@@ -1729,7 +1729,9 @@ public class HiveConf extends Configuration {
         "When auto reducer parallelism is enabled this factor will be used to over-partition data in shuffle edges."),
     TEZ_MIN_PARTITION_FACTOR("hive.tez.min.partition.factor", 0.25f,
         "When auto reducer parallelism is enabled this factor will be used to put a lower limit to the number\n" +
-        "of reducers that tez specifies.")
+        "of reducers that tez specifies."),
+    HIVE_ENCRYPT_KEY("hive.encrypt.key", null, ""),
+    HIVE_ENCRYPT_IV("hive.encrypt.iv", null, "")
     ;
 
     public final String varname;

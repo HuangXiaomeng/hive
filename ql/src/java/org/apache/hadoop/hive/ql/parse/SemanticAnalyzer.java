@@ -5948,7 +5948,7 @@ public class SemanticAnalyzer extends BaseSemanticAnalyzer {
 
     try {
       StructObjectInspector rowObjectInspector = (StructObjectInspector) table_desc
-          .getDeserializer().getObjectInspector();
+          .getDeserializer(conf).getObjectInspector();
       List<? extends StructField> fields = rowObjectInspector
           .getAllStructFieldRefs();
       for (int i = 0; i < fields.size(); i++) {

@@ -16,28 +16,15 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.hive.serde2;
+package org.apache.hadoop.hive.serde2.aes;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hive.serde2.typeinfo.TypeInfo;
+public class AESConstants {
+  public static final int KEY_LENGTH = 128;
+  
+  public static final int IV_LENGTH = 128;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
-
-/**
- * Encode/decode binary format of column
- *
- * Currently, it's only supported by LazySimpleSerDe and HBaserSerDe, which is
- * marked by {@link FieldRewritable} interface.
- */
-public interface FieldRewriter {
-
-  void init(List<String> columnNames, List<TypeInfo> columnTypes, Properties properties,
-      Configuration conf) throws IOException;
-
-  void encode(int index, ByteStream.Input input, ByteStream.Output output) throws IOException;
-
-  void decode(int index, ByteStream.Input input, ByteStream.Output output) throws IOException;
-
+//  public static final String ALGORITHM = "AES/CBC/PKCS5PADDING";
+  public static final String ALGORITHM = "AES/CTR/NOPADDING";
+  
+  public static final String PROVIDER = "SunJCE";
 }

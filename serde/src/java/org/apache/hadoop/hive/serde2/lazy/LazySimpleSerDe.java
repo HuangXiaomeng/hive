@@ -390,7 +390,7 @@ public class LazySimpleSerDe extends AbstractEncodingAwareSerDe implements Field
     try {
       FieldRewriter rewriter =
           (FieldRewriter) ReflectionUtils.newInstance(Class.forName(encoderClass), job);
-      rewriter.init(parameters.columnNames, parameters.columnTypes, properties);
+      rewriter.init(parameters.columnNames, parameters.columnTypes, properties, job);
       return rewriter;
     } catch (Exception e) {
       throw new SerDeException(e);
