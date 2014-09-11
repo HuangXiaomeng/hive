@@ -19,15 +19,23 @@
 package org.apache.hadoop.hive.serde2.aes;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.security.DigestException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.commons.codec.binary.Base64;
 
 public class AESUtil {
   /**
@@ -96,5 +104,22 @@ public class AESUtil {
 
   public static IvParameterSpec convert2IvSpec(byte[] iv) {
     return new IvParameterSpec(iv);
+  }
+
+  public static String encodeBytes(byte[] bytes) throws UnsupportedEncodingException {
+    return bytes == null ? null : new String(Base64.encodeBase64(bytes), Charset.forName("UTF-8"));
+  }
+
+  public static byte[] decodeBytes(String str) throws UnsupportedEncodingException {
+    return Base64.decodeBase64(str.getBytes(Charset.forName("UTF-8")));
+  }
+
+  // support every column has a key in future
+  public static List<String> getKeys(String keyNames) {
+    List<String> keys = new ArrayList<String>();
+    for (String key : keyNames.split(",")) {
+      keys.add(key.trim());
+    }
+    return keys;
   }
 }

@@ -173,6 +173,7 @@ import org.apache.hadoop.hive.ql.security.authorization.plugin.HiveRoleGrant;
 import org.apache.hadoop.hive.ql.security.authorization.plugin.HiveV1Authorizer;
 import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.hadoop.hive.serde.serdeConstants;
+import org.apache.hadoop.hive.serde2.aes.HiveSerdeKeyManagement;
 import org.apache.hadoop.hive.serde2.Deserializer;
 import org.apache.hadoop.hive.serde2.MetadataTypedColumnsetSerDe;
 import org.apache.hadoop.hive.serde2.columnar.ColumnarSerDe;
@@ -3795,6 +3796,12 @@ public class DDLTask extends Task<DDLWork> implements Serializable {
     Table tbl = db.newTable(crtTbl.getTableName());
 
     if (crtTbl.getTblProps() != null) {
+      //set up table for properties if encryption is needed
+      try {
+        HiveSerdeKeyManagement.setupTableForEncryption(conf, crtTbl.getTblProps());
+      } catch (Exception e) {
+        throw new HiveException(e);
+      }
       tbl.getTTable().getParameters().putAll(crtTbl.getTblProps());
     }
 
@@ -3971,6 +3978,12 @@ public class DDLTask extends Task<DDLWork> implements Serializable {
       tbl=db.newTable(targetTableName);
 
       if (crtTbl.getTblProps() != null) {
+        //set up table for properties if encryption is needed
+        try {
+          HiveSerdeKeyManagement.setupTableForEncryption(conf, crtTbl.getTblProps());
+        } catch (Exception e) {
+          throw new HiveException(e);
+        }
         tbl.getTTable().getParameters().putAll(crtTbl.getTblProps());
       }
 

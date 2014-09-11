@@ -19,13 +19,20 @@
 package org.apache.hadoop.hive.serde2.aes;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hive.conf.HiveConf.ConfVars;
+import org.apache.hadoop.crypto.key.KeyProvider.KeyVersion;
+import org.apache.hadoop.crypto.key.kms.KMSClientProvider;
 import org.apache.hadoop.hive.serde2.AbstractFieldRewriter;
 import org.apache.hadoop.hive.serde2.ByteStream;
 import org.apache.hadoop.hive.serde2.typeinfo.TypeInfo;
+import org.apache.hadoop.security.authorize.AuthorizationException;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
@@ -36,13 +43,41 @@ public class AESRewriter extends AbstractFieldRewriter {
   private byte[] keyBytes;
   private byte[] ivBytes;
   private boolean isEncode = true;
+  private static Log LOG = LogFactory.getLog(AESRewriter.class);
 
   @Override
   public void init(List<String> columnNames, List<TypeInfo> columnTypes, Properties properties,
       Configuration conf) throws IOException {
-    String key = conf.get(ConfVars.HIVE_ENCRYPT_KEY.varname);
-    String iv = conf.get(ConfVars.HIVE_ENCRYPT_IV.varname);
-    if (key == null || key.isEmpty() || iv == null || iv.isEmpty()) {
+    String keyNames = properties.getProperty(HiveSerdeKeyManagement.HIVE_ENCRYPT_KEYNAMES);
+
+    if (keyNames == null || keyNames.isEmpty()) {
+      isEncode = false;
+      LOG.warn("Please set " + HiveSerdeKeyManagement.HIVE_ENCRYPT_KEYNAMES);
+      return;
+    }
+
+    String kmsUri = conf.get(HiveSerdeKeyManagement.KMS_URI);
+    if (kmsUri == null) {
+      isEncode = false;
+      LOG.warn("Please set " + HiveSerdeKeyManagement.KMS_URI);
+      return;
+    }
+
+    KeyVersion kv = null;
+    try {
+      URL url = new URL(kmsUri);
+      URI uri = HiveSerdeKeyManagement.createKMSUri(url);
+      KMSClientProvider kp = new KMSClientProvider(uri, conf);
+      // now just support all columns share one key
+      String keyName = AESUtil.getKeys(keyNames).get(0);
+      kv = kp.getCurrentKey(keyName);
+      if (kv == null) {
+        throw new IOException("Cant get the key when do ser/deser");
+      }
+    } catch (URISyntaxException e) {
+      throw new IOException("Bad configuration of " + HiveSerdeKeyManagement.KMS_URI +
+          " at " + kmsUri, e);
+    } catch (AuthorizationException e) {
       isEncode = false;
       return;
     }
@@ -53,12 +88,8 @@ public class AESRewriter extends AbstractFieldRewriter {
       throw new IOException("Failed to initiate cipher object.", e);
     }
 
-    try {
-      keyBytes = AESUtil.hash(key, AESConstants.KEY_LENGTH);
-      ivBytes = AESUtil.hash(iv, AESConstants.KEY_LENGTH);
-    } catch (CryptoException e) {
-      throw new IOException("Failed to construct key/iv bytes.", e);
-    }
+    keyBytes = kv.getMaterial();
+    ivBytes = AESUtil.decodeBytes(properties.getProperty(HiveSerdeKeyManagement.HIVE_ENCRYPT_IV));
   }
 
   @Override
@@ -69,7 +100,8 @@ public class AESRewriter extends AbstractFieldRewriter {
         output.write(input.toBytes());
         return;
       }
-      cipher.init(Cipher.ENCRYPT_MODE, AESUtil.convert2SecretKey(keyBytes), AESUtil.convert2IvSpec(ivBytes));
+      cipher.init(Cipher.ENCRYPT_MODE, AESUtil.convert2SecretKey(keyBytes),
+          AESUtil.convert2IvSpec(ivBytes));
       byte[] encryptedBytes = cipher.doFinal(input.toBytes());
       byte[] wrappedBytes = Base64.encodeBase64(encryptedBytes);
       output.write(wrappedBytes);
@@ -86,7 +118,8 @@ public class AESRewriter extends AbstractFieldRewriter {
         output.write(input.toBytes());
         return;
       }
-      cipher.init(Cipher.DECRYPT_MODE, AESUtil.convert2SecretKey(keyBytes), AESUtil.convert2IvSpec(ivBytes));
+      cipher.init(Cipher.DECRYPT_MODE, AESUtil.convert2SecretKey(keyBytes),
+          AESUtil.convert2IvSpec(ivBytes));
       byte[] unwrappedBytes = Base64.decodeBase64(input.toBytes());
       byte[] plaintextBytes = cipher.doFinal(unwrappedBytes);
       output.write(plaintextBytes);
