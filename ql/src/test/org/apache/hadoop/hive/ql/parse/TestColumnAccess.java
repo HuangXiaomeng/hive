@@ -110,7 +110,6 @@ public class TestColumnAccess {
     Assert.assertNotNull(cols.contains("id1"));
     Assert.assertNotNull(cols.contains("name1"));
 
-
     // check access columns from readEntity
     Map<String, List<String>> tableColsMap = getColsFromReadEntity(plan.getInputs());
     cols = tableColsMap.get("default@t1");
@@ -148,7 +147,6 @@ public class TestColumnAccess {
     Assert.assertNotNull(cols.contains("id2"));
     Assert.assertNotNull(cols.contains("id1"));
     Assert.assertNotNull(cols.contains("name1"));
-
 
     // check access columns from readEntity
     Map<String, List<String>> tableColsMap = getColsFromReadEntity(plan.getInputs());
