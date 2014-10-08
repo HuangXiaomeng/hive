@@ -64,11 +64,19 @@ public interface Encryptor {
    * Reset state, reinitialize with the key and iv
    */
   void reset();
-  
+
   /**
    * Encrypt a stream of plaintext
    * @param in
    * @param out
    */
   public void encrypt(InputStream in, OutputStream out) throws IOException;
+
+  /**
+   * Encrypt a array of byte of plaintext
+   * @param in
+   * @param out
+   */
+  public void encrypt(byte[] src, int offset, int length,
+      OutputStream out) throws IOException;
 }

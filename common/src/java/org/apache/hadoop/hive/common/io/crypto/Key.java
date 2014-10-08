@@ -29,7 +29,7 @@ public class Key {
     this.name = name;
     this.material = material;
   }
-  
+
   public String getName() {
     return name;
   }
@@ -38,6 +38,7 @@ public class Key {
     return material;
   }
 
+  @Override
   public String toString() {
     StringBuilder buf = new StringBuilder();
     buf.append("key");

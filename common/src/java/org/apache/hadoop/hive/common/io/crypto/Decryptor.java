@@ -59,11 +59,19 @@ public interface Decryptor {
    * Reset state, reinitialize with the key and iv
    */
   void reset();
-  
+
   /**
    * Decrypt a stream of ciphertext
    * @param in
    * @param out
    */
   public void decrypt(InputStream in, OutputStream out) throws IOException;
+
+  /**
+   * Decrypt a array of byte of ciphertext
+   * @param in
+   * @param out
+   */
+  public void decrypt(byte[] src, int offset, int length,
+      OutputStream out) throws IOException;
 }

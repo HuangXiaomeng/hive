@@ -34,7 +34,7 @@ public abstract class CryptoCodec {
 
   /**
    * Get crypto codec for specified algorithm/mode/padding.
-   * 
+   *
    * @param conf
    *          the configuration
    * @param CipherSuite
@@ -42,7 +42,7 @@ public abstract class CryptoCodec {
    * @return CryptoCodec the codec object. Null value will be returned if no
    *         crypto codec classes with cipher suite configured.
    */
-  public static CryptoCodec getInstance(Configuration conf, 
+  public static CryptoCodec getInstance(Configuration conf,
       CipherSuite cipherSuite) {
     Class<? extends CryptoCodec> clazz = getCodecClass(conf, cipherSuite);
     if (clazz == null) {
@@ -57,42 +57,42 @@ public abstract class CryptoCodec {
           codec = c;
         }
       } else {
-        LOG.warn("Crypto codec {} doesn't meet the cipher suite {}.", 
+        LOG.warn("Crypto codec {} doesn't meet the cipher suite {}.",
             clazz.getName(), cipherSuite.getName());
       }
     } catch (Exception e) {
       LOG.warn("Crypto codec {} is not available.", clazz.getName());
     }
-    
+
     if (codec != null) {
       return codec;
     }
-    
-    throw new RuntimeException("No available crypto codec which meets " + 
+
+    throw new RuntimeException("No available crypto codec which meets " +
         "the cipher suite " + cipherSuite.getName() + ".");
   }
-  
+
   /**
    * Get crypto codec for algorithm/mode/padding in config value
    * hive.security.crypto.cipher.suite
-   * 
+   *
    * @param conf
    *          the configuration
    * @return CryptoCodec the codec object Null value will be returned if no
    *         crypto codec classes with cipher suite configured.
    */
   public static CryptoCodec getInstance(Configuration conf) {
-    String name = conf.get(ConfVars.HIVE_SECURITY_CRYPTO_CIPHER_SUITE.varname, 
+    String name = conf.get(ConfVars.HIVE_SECURITY_CRYPTO_CIPHER_SUITE.varname,
         ConfVars.HIVE_SECURITY_CRYPTO_CIPHER_SUITE.getDefaultValue());
     return getInstance(conf, CipherSuite.convert(name));
   }
-  
+
   private static Class<? extends CryptoCodec> getCodecClass(
       Configuration conf, CipherSuite cipherSuite) {
     Class<? extends CryptoCodec> result = null;
     String codecString = conf.get(ConfVars.HIVE_SECURITY_CRYPTO_CODEC.varname,
         ConfVars.HIVE_SECURITY_CRYPTO_CODEC.getDefaultValue());
-    
+
     try {
       result = (Class<? extends CryptoCodec>) conf.getClassByName(codecString);
     } catch (ClassCastException e) {
@@ -100,7 +100,7 @@ public abstract class CryptoCodec {
     } catch (ClassNotFoundException e) {
       LOG.warn("Crypto codec " + codecString + " not found.");
     }
-    
+
     return result;
   }
 
