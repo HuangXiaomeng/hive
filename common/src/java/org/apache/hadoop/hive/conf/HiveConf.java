@@ -1729,7 +1729,13 @@ public class HiveConf extends Configuration {
         "When auto reducer parallelism is enabled this factor will be used to over-partition data in shuffle edges."),
     TEZ_MIN_PARTITION_FACTOR("hive.tez.min.partition.factor", 0.25f,
         "When auto reducer parallelism is enabled this factor will be used to put a lower limit to the number\n" +
-        "of reducers that tez specifies.")
+        "of reducers that tez specifies."),
+    HIVE_SECURITY_CRYPTO_CIPHER_SUITE("hive.security.crypto.cipher.suite",
+        "AES/CTR/NoPadding",
+        "Now just support AES/CTR/NoPadding"),
+    HIVE_SECURITY_CRYPTO_CODEC("hive.security.crypto.codec",
+        "hive.security.crypto.codec.aes.JceAesCryptoCodec",
+        "The crypto codec should match crypto cipher suite.")
     ;
 
     public final String varname;
