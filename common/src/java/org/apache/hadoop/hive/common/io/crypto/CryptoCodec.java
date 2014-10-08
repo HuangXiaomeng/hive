@@ -16,11 +16,6 @@
  */
 package org.apache.hadoop.hive.common.io.crypto;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.Key;
-
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.conf.Configuration;
@@ -79,7 +74,7 @@ public abstract class CryptoCodec {
   
   /**
    * Get crypto codec for algorithm/mode/padding in config value
-   * hadoop.security.crypto.cipher.suite
+   * hive.security.crypto.cipher.suite
    * 
    * @param conf
    *          the configuration
@@ -115,9 +110,9 @@ public abstract class CryptoCodec {
   public abstract CipherSuite getCipherSuite();
 
   /**
-   * Return this Cipher's name
+   * Return this codec's algorithm
    */
-  public abstract String getName();
+  public abstract String getAlgorithm();
 
   /**
    * Return the key length required by this cipher, in bytes
@@ -130,12 +125,6 @@ public abstract class CryptoCodec {
   public abstract int getIvLength();
 
   /**
-   * Create a random symmetric key
-   * @return the random symmetric key
-   */
-  public abstract Key getRandomKey();
-
-  /**
    * Get an encryptor for encrypting data.
    */
   public abstract Encryptor createEncryptor();
@@ -144,49 +133,5 @@ public abstract class CryptoCodec {
    * Return a decryptor for decrypting data.
    */
   public abstract Decryptor createDecryptor();
-
-  /**
-   * Create an encrypting output stream given a key and IV
-   * @param out the output stream to wrap
-   * @param key, the key material
-   * @param iv initialization vector
-   * @return the encrypting wrapper
-   * @throws IOException
-   */
-  public abstract OutputStream createEncryptionStream(OutputStream out, byte[] key,
-      byte[] iv)
-    throws IOException;
-
-  /**
-   * Create an encrypting output stream given an initialized encryptor
-   * @param out the output stream to wrap
-   * @param encryptor the encryptor
-   * @return the encrypting wrapper
-   * @throws IOException
-   */
-  public abstract OutputStream createEncryptionStream(OutputStream out, Encryptor encryptor)
-    throws IOException;
-
-  /**
-   * Create a decrypting input stream given a key and IV
-   * @param in the input stream to wrap
-   * @param key, the key material
-   * @param iv initialization vector
-   * @return the decrypting wrapper
-   * @throws IOException
-   */
-  public abstract InputStream createDecryptionStream(InputStream in, byte[] key,
-      byte[] iv)
-    throws IOException;
-
-  /**
-   * Create a decrypting output stream given an initialized decryptor
-   * @param in the input stream to wrap
-   * @param decryptor the decryptor
-   * @return the decrypting wrapper
-   * @throws IOException
-   */
-  public abstract InputStream createDecryptionStream(InputStream in, Decryptor decryptor)
-    throws IOException;
 
 }
