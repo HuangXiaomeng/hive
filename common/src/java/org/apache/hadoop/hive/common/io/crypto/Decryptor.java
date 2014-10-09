@@ -61,17 +61,23 @@ public interface Decryptor {
   void reset();
 
   /**
+   * Create a stream for decryption
+   * @param in
+   */
+  public InputStream createDecryptionStream(InputStream in);
+
+  /**
    * Decrypt a stream of ciphertext
    * @param in
    * @param out
    */
-  public void decrypt(InputStream in, OutputStream out) throws IOException;
+  public void decrypt(InputStream in, OutputStream out, int outLen) throws IOException;
 
   /**
-   * Decrypt a array of byte of ciphertext
+   * Decrypt a stream to a array of byte
    * @param in
    * @param out
    */
-  public void decrypt(byte[] src, int offset, int length,
-      OutputStream out) throws IOException;
+  public void decrypt(InputStream in, byte[] dest, int destOffset,
+      int destSize) throws IOException;
 }

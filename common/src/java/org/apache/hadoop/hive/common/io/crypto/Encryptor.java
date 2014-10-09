@@ -66,6 +66,12 @@ public interface Encryptor {
   void reset();
 
   /**
+   * Create a stream for encryption
+   * @param out
+   */
+  public OutputStream createEncryptionStream(OutputStream out);
+
+  /**
    * Encrypt a stream of plaintext
    * @param in
    * @param out

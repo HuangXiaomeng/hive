@@ -18,6 +18,7 @@ package org.apache.hadoop.hive.common.io.crypto;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
+import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.conf.HiveConf.ConfVars;
 import org.apache.hadoop.util.ReflectionUtils;
@@ -29,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
-public abstract class CryptoCodec {
+public abstract class CryptoCodec implements Configurable {
   public static Logger LOG = LoggerFactory.getLogger(CryptoCodec.class);
 
   /**
