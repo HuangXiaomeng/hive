@@ -17,17 +17,16 @@
  */
 package org.apache.hadoop.hive.common.io.crypto.aes;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
+import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.hive.common.io.crypto.Encryptor;
@@ -37,25 +36,42 @@ import com.google.common.base.Preconditions;
 
 @InterfaceAudience.Private
 @InterfaceStability.Evolving
-public class AesEncryptor implements Encryptor {
+public class AesEncryptor extends Encryptor {
 
-  private final javax.crypto.Cipher cipher;
+  private final Cipher cipher;
   private final SecureRandom rng;
   private Key key;
   private byte[] iv;
   private boolean initialized = false;
 
-  public AesEncryptor(javax.crypto.Cipher cipher, SecureRandom rng) {
+  public AesEncryptor(Cipher cipher, SecureRandom rng) {
     this.cipher = cipher;
     this.rng = rng;
   }
 
-  javax.crypto.Cipher getCipher() {
+  public AesEncryptor(Cipher cipher, SecureRandom rng, Key key, byte[] iv) {
+    this.cipher = cipher;
+    this.rng = rng;
+    this.key = key;
+    this.iv = Arrays.copyOf(iv, iv.length);
+  }
+
+  public Cipher getCipher() {
     return cipher;
   }
 
   @Override
+  public Key getKey() {
+    return key;
+  }
+
+  @Override
   public void setKey(Key key) {
+    Preconditions.checkNotNull(key, "Key cannot be null");
+    if (key != null) {
+      Preconditions.checkArgument(key.getMaterial().length == JceAesCtrCryptoCodec.KEY_LENGTH,
+          "Invalid key length");
+    }
     this.key = key;
   }
 
@@ -80,7 +96,7 @@ public class AesEncryptor implements Encryptor {
       Preconditions.checkArgument(iv.length == JceAesCtrCryptoCodec.IV_LENGTH,
           "Invalid IV length");
     }
-    this.iv = iv;
+    this.iv = Arrays.copyOf(iv, iv.length);
   }
 
   @Override
@@ -94,27 +110,6 @@ public class AesEncryptor implements Encryptor {
       init();
     }
     return new javax.crypto.CipherOutputStream(out, cipher);
-  }
-
-  @Override
-  public void encrypt(InputStream in, OutputStream out) throws IOException {
-    OutputStream os = createEncryptionStream(out);
-    try {
-      IOUtils.copy(in, os);
-    } finally {
-      os.close();
-    }
-  }
-
-  @Override
-  public void encrypt(byte[] src, int offset, int length,
-      OutputStream out) throws IOException {
-    OutputStream os = createEncryptionStream(out);
-    try {
-      os.write(src, offset, length);
-    } finally {
-      os.close();
-    }
   }
 
   protected void init() {

@@ -21,68 +21,93 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Encryptors apply a cipher to an OutputStream to produce ciphertext.
  */
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
-public interface Encryptor {
+public abstract class Encryptor {
+  public static Logger LOG = LoggerFactory.getLogger(Encryptor.class);
+
+  /**
+   * Get the secret key
+   */
+  public abstract Key getKey();
 
   /**
    * Set the secret key
    * @param key
    */
-  public void setKey(Key key);
+  public abstract void setKey(Key key);
 
   /**
    * Get the expected length for the initialization vector
    * @return the expected length for the initialization vector
    */
-  public int getIvLength();
+  public abstract int getIvLength();
 
   /**
    * Get the cipher's internal block size
    * @return the cipher's internal block size
    */
-  public int getBlockSize();
+  public abstract int getBlockSize();
 
   /**
    * Get the initialization vector
    */
-  public byte[] getIv();
+  public abstract byte[] getIv();
 
   /**
    * Set the initialization vector
    * @param iv
    */
-  public void setIv(byte[] iv);
+  public abstract void setIv(byte[] iv);
 
   /**
    * Reset state, reinitialize with the key and iv
    */
-  void reset();
+  public abstract void  reset();
 
   /**
    * Create a stream for encryption
    * @param out
    */
-  public OutputStream createEncryptionStream(OutputStream out);
+  public abstract OutputStream createEncryptionStream(OutputStream out);
 
   /**
    * Encrypt a stream of plaintext
    * @param in
    * @param out
    */
-  public void encrypt(InputStream in, OutputStream out) throws IOException;
+  public void encrypt(InputStream in, OutputStream out) throws IOException {
+    OutputStream os = createEncryptionStream(out);
+    try {
+      IOUtils.copy(in, os);
+    } finally {
+      os.close();
+    }
+  }
 
   /**
    * Encrypt a array of byte of plaintext
-   * @param in
+   * @param src
+   * @param offset
+   * @param length
    * @param out
    */
   public void encrypt(byte[] src, int offset, int length,
-      OutputStream out) throws IOException;
+      OutputStream out) throws IOException {
+    OutputStream os = createEncryptionStream(out);
+    try {
+      os.write(src, offset, length);
+    } finally {
+      os.close();
+    }
+  }
 }

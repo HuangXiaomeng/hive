@@ -17,6 +17,8 @@
 
 package org.apache.hadoop.hive.common.io.crypto;
 
+import java.util.Arrays;
+
 /**
  * Key is class contains key name and key material.
  *
@@ -25,9 +27,9 @@ public class Key {
   private final String name;
   private final byte[] material;
 
-  protected Key(String name, byte[] material) {
+  public Key(String name, byte[] material) {
     this.name = name;
-    this.material = material;
+    this.material = Arrays.copyOf(material, material.length);;
   }
 
   public String getName() {

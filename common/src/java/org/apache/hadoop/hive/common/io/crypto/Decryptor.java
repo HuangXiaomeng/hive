@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 
@@ -29,49 +30,72 @@ import org.apache.hadoop.classification.InterfaceStability;
  */
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
-public interface Decryptor {
+public abstract class Decryptor {
+
+  /**
+   * Get the secret key
+   */
+  public abstract Key getKey();
 
   /**
    * Set the secret key
    * @param key
    */
-  public void setKey(Key key);
+  public abstract void setKey(Key key);
 
   /**
    * Get the expected length for the initialization vector
    * @return the expected length for the initialization vector
    */
-  public int getIvLength();
+  public abstract int getIvLength();
 
   /**
    * Get the cipher's internal block size
    * @return the cipher's internal block size
    */
-  public int getBlockSize();
+  public abstract int getBlockSize();
 
   /**
    * Set the initialization vector
    * @param iv
    */
-  public void setIv(byte[] iv);
+  public abstract void setIv(byte[] iv);
 
   /**
    * Reset state, reinitialize with the key and iv
    */
-  void reset();
+  public abstract void reset();
 
   /**
    * Create a stream for decryption
    * @param in
    */
-  public InputStream createDecryptionStream(InputStream in);
+  public abstract InputStream createDecryptionStream(InputStream in);
 
   /**
    * Decrypt a stream of ciphertext
    * @param in
    * @param out
    */
-  public void decrypt(InputStream in, OutputStream out, int outLen) throws IOException;
+  public void decrypt(InputStream in, OutputStream out, int outLen)
+      throws IOException {
+    InputStream is = createDecryptionStream(in);
+    byte buf[] = new byte[8*1024];
+    long remaining = outLen;
+    try {
+      while (remaining > 0) {
+        int toRead = (int)(remaining < buf.length ? remaining : buf.length);
+        int read = is.read(buf, 0, toRead);
+        if (read < 0) {
+          break;
+        }
+        out.write(buf, 0, read);
+        remaining -= read;
+      }
+    } finally {
+      is.close();
+    }
+  }
 
   /**
    * Decrypt a stream to a array of byte
@@ -79,5 +103,12 @@ public interface Decryptor {
    * @param out
    */
   public void decrypt(InputStream in, byte[] dest, int destOffset,
-      int destSize) throws IOException;
+      int destSize) throws IOException {
+    InputStream is = createDecryptionStream(in);
+    try {
+      IOUtils.readFully(is, dest, destOffset, destSize);
+    } finally {
+      is.close();
+    }
+  }
 }

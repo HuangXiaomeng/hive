@@ -17,16 +17,15 @@
  */
 package org.apache.hadoop.hive.common.io.crypto.aes;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.util.Arrays;
 
+import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.hive.common.io.crypto.Decryptor;
@@ -36,24 +35,39 @@ import com.google.common.base.Preconditions;
 
 @InterfaceAudience.Private
 @InterfaceStability.Evolving
-public class AesDecryptor implements Decryptor {
+public class AesDecryptor extends Decryptor {
 
-  private final javax.crypto.Cipher cipher;
+  private final Cipher cipher;
   private Key key;
   private byte[] iv;
   private boolean initialized = false;
 
-  public AesDecryptor(javax.crypto.Cipher cipher) {
+  public AesDecryptor(Cipher cipher) {
     this.cipher = cipher;
   }
 
-  javax.crypto.Cipher getCipher() {
+  public AesDecryptor(Cipher cipher, Key key, byte[] iv) {
+    this.cipher = cipher;
+    this.key = key;
+    this.iv = Arrays.copyOf(iv, iv.length);
+  }
+
+  public Cipher getCipher() {
     return cipher;
+  }
+
+  @Override
+  public Key getKey() {
+    return key;
   }
 
   @Override
   public void setKey(Key key) {
     Preconditions.checkNotNull(key, "Key cannot be null");
+    if (key != null) {
+      Preconditions.checkArgument(key.getMaterial().length == JceAesCtrCryptoCodec.KEY_LENGTH,
+          "Invalid key length");
+    }
     this.key = key;
   }
 
@@ -72,7 +86,7 @@ public class AesDecryptor implements Decryptor {
     Preconditions.checkNotNull(iv, "IV cannot be null");
     Preconditions.checkArgument(iv.length == JceAesCtrCryptoCodec.IV_LENGTH,
         "Invalid IV length");
-    this.iv = iv;
+    this.iv = Arrays.copyOf(iv, iv.length);
   }
 
   @Override
@@ -86,37 +100,6 @@ public class AesDecryptor implements Decryptor {
       init();
     }
     return new javax.crypto.CipherInputStream(in, cipher);
-  }
-
-  @Override
-  public void decrypt(InputStream in, OutputStream out, int outLen) throws IOException {
-    InputStream is = createDecryptionStream(in);
-    byte buf[] = new byte[8*1024];
-    long remaining = outLen;
-    try {
-      while (remaining > 0) {
-        int toRead = (int)(remaining < buf.length ? remaining : buf.length);
-        int read = is.read(buf, 0, toRead);
-        if (read < 0) {
-          break;
-        }
-        out.write(buf, 0, read);
-        remaining -= read;
-      }
-    } finally {
-      is.close();
-    }
-  }
-
-  @Override
-  public void decrypt(InputStream in, byte[] dest, int destOffset,
-      int destSize) throws IOException {
-    InputStream is = createDecryptionStream(in);
-    try {
-      IOUtils.readFully(is, dest, destOffset, destSize);
-    } finally {
-      is.close();
-    }
   }
 
   protected void init() {
