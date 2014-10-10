@@ -114,6 +114,7 @@ public class AesEncryptor extends Encryptor {
 
   protected void init() {
     try {
+      Preconditions.checkNotNull(key, "Key must be setted");
       if (iv == null) {
         iv = new byte[getIvLength()];
         rng.nextBytes(iv);

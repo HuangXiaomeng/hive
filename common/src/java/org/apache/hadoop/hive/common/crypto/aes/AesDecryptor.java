@@ -104,6 +104,7 @@ public class AesDecryptor extends Decryptor {
 
   protected void init() {
     try {
+      Preconditions.checkNotNull(key, "Key must be setted");
       if (iv == null) {
         throw new NullPointerException("IV is null");
       }
