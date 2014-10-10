@@ -25,36 +25,36 @@ import org.apache.hadoop.conf.Configurable;
  */
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
-public abstract class CryptoCodec implements Configurable {
+public interface CryptoCodec extends Configurable {
 
   /**
    * Return the CipherSuite for this codec.
    */
-  public abstract CipherSuite getCipherSuite();
+  public CipherSuite getCipherSuite();
 
   /**
    * Return this codec's algorithm.
    */
-  public abstract String getAlgorithm();
+  public String getAlgorithm();
 
   /**
    * Return the key length required by this cipher, in bytes.
    */
-  public abstract int getKeyLength();
+  public int getKeyLength();
 
   /**
    * Return the expected initialization vector length, in bytes.
    */
-  public abstract int getIvLength();
+  public int getIvLength();
 
   /**
    * Get an encryptor for encrypting data.
    */
-  public abstract Encryptor createEncryptor();
+  public Encryptor createEncryptor();
 
   /**
    * Return a decryptor for decrypting data.
    */
-  public abstract Decryptor createDecryptor();
+  public Decryptor createDecryptor();
 
 }

@@ -24,14 +24,14 @@ import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.hive.common.crypto.CipherSuite;
 
 /**
- * Implement the AES-CTR crypto codec using JCE provider.
+ * Implement the AES-CBC crypto codec using JCE provider.
  */
 @InterfaceAudience.Private
 @InterfaceStability.Evolving
-public class JceAesCtrCryptoCodec extends JceAesCryptoCodec {
-  protected static final CipherSuite SUITE = CipherSuite.AES_CTR_NOPADDING;
+public class JceAesCbcCryptoCodec extends JceAesCryptoCodec {
+  protected static final CipherSuite SUITE = CipherSuite.AES_CBC_PKCS5PADDING;
 
-  public JceAesCtrCryptoCodec() {
+  public JceAesCbcCryptoCodec() {
   }
 
   @Override

@@ -69,7 +69,7 @@ public class AesEncryptor extends Encryptor {
   public void setKey(Key key) {
     Preconditions.checkNotNull(key, "Key cannot be null");
     if (key != null) {
-      Preconditions.checkArgument(key.getMaterial().length == JceAesCtrCryptoCodec.KEY_LENGTH,
+      Preconditions.checkArgument(key.getMaterial().length == JceAesCryptoCodec.KEY_LENGTH,
           "Invalid key length");
     }
     this.key = key;
@@ -93,7 +93,7 @@ public class AesEncryptor extends Encryptor {
   @Override
   public void setIv(byte[] iv) {
     if (iv != null) {
-      Preconditions.checkArgument(iv.length == JceAesCtrCryptoCodec.IV_LENGTH,
+      Preconditions.checkArgument(iv.length == JceAesCryptoCodec.IV_LENGTH,
           "Invalid IV length");
     }
     this.iv = Arrays.copyOf(iv, iv.length);
@@ -119,7 +119,8 @@ public class AesEncryptor extends Encryptor {
         rng.nextBytes(iv);
       }
       cipher.init(javax.crypto.Cipher.ENCRYPT_MODE,
-          new SecretKeySpec(key.getMaterial(), "AES"), new IvParameterSpec(iv));
+          new SecretKeySpec(key.getMaterial(), JceAesCryptoCodec.ALGORITHM),
+          new IvParameterSpec(iv));
     } catch (InvalidKeyException e) {
       throw new RuntimeException(e);
     } catch (InvalidAlgorithmParameterException e) {
