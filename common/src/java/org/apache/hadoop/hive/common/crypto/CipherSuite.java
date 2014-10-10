@@ -16,63 +16,54 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.hive.common.io.crypto;
+package org.apache.hadoop.hive.common.crypto;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 
 /**
- * Defines properties of a CipherSuite. Modeled after the ciphers in
- * {@link javax.crypto.Cipher}.
+ * CipherSuite includes cipher name and block size.
  */
 @InterfaceAudience.Private
 public enum CipherSuite {
   UNKNOWN("Unknown", 0),
-  AES_CTR_NOPADDING("AES/CTR/NoPadding", 16);
+  AES_CTR_NOPADDING("AES/CTR/NoPadding", 16),
+  AES_CBC_PKCS5PADDING("AES/CBC/PKCS5Padding", 16);
 
   private final String name;
-  private final int algoBlockSize;
+  private final int blockSize;
 
-  private Integer unknownValue = null;
-
-  CipherSuite(String name, int algoBlockSize) {
+  CipherSuite(String name, int blockSize) {
     this.name = name;
-    this.algoBlockSize = algoBlockSize;
-  }
-
-  public void setUnknownValue(int unknown) {
-    this.unknownValue = unknown;
-  }
-
-  public int getUnknownValue() {
-    return unknownValue;
+    this.blockSize = blockSize;
   }
 
   /**
-   * @return name of cipher suite, as in {@link javax.crypto.Cipher}
+   * Return name(i.e. algorithm/mode/padding) of cipher suite
    */
   public String getName() {
     return name;
   }
 
   /**
-   * @return size of an algorithm block in bytes
+   * Return the block size of an algorithm
    */
-  public int getAlgorithmBlockSize() {
-    return algoBlockSize;
+  public int getBlockSize() {
+    return blockSize;
   }
 
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder("{");
     builder.append("name: " + name);
-    builder.append(", algorithmBlockSize: " + algoBlockSize);
-    if (unknownValue != null) {
-      builder.append(", unknownValue: " + unknownValue);
-    }
+    builder.append(", algorithmBlockSize: " + blockSize);
     builder.append("}");
     return builder.toString();
   }
 
+  /**
+   * Check if the cipher name match anyone from CipherSuite
+   * @param name cipher suite name
+   */
   public static void checkName(String name) {
     CipherSuite[] suites = CipherSuite.values();
     for (CipherSuite suite : suites) {
@@ -84,8 +75,7 @@ public enum CipherSuite {
   }
 
   /**
-   * Convert to CipherSuite from name, {@link #algoBlockSize} is fixed for
-   * certain cipher suite, just need to compare the name.
+   * Convert to CipherSuite from a cipher name.
    * @param name cipher suite name
    * @return CipherSuite cipher suite
    */
@@ -97,19 +87,5 @@ public enum CipherSuite {
       }
     }
     throw new IllegalArgumentException("Invalid cipher suite name: " + name);
-  }
-
-  /**
-   * Returns suffix of cipher suite configuration.
-   * @return String configuration suffix
-   */
-  public String getConfigSuffix() {
-    String[] parts = name.split("/");
-    StringBuilder suffix = new StringBuilder();
-    for (String part : parts) {
-      suffix.append(".").append(part.toLowerCase());
-    }
-
-    return suffix.toString();
   }
 }

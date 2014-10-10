@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.hadoop.hive.common.io.crypto;
+package org.apache.hadoop.hive.common.crypto;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.conf.HiveConf.ConfVars;
@@ -26,18 +26,15 @@ public class CryptoCodecFactory {
   public static Logger LOG = LoggerFactory.getLogger(CryptoCodecFactory.class);
 
   /**
-   * Get crypto codec for specified algorithm/mode/padding.
-   *
+   * Get crypto codec from configuration and this codec should match cipherSuite.
    * @param conf
-   *          the configuration
-   * @param CipherSuite
-   *          algorithm/mode/padding
-   * @return CryptoCodec the codec object. Null value will be returned if no
-   *         crypto codec classes with cipher suite configured.
+   * @param cipherSuite
+   * @return A instance of CryptoCodec. Null value will be returned if no
+   *         crypto codec found. Exception will be thrown if the crypto codec
+   *         don't match the cipherSuite.
    */
-  public static CryptoCodec getInstance(Configuration conf,
-      CipherSuite cipherSuite) {
-    Class<? extends CryptoCodec> clazz = getCodecClass(conf, cipherSuite);
+  public static CryptoCodec getInstance(Configuration conf, CipherSuite cipherSuite) {
+    Class<? extends CryptoCodec> clazz = getCodecClass(conf);
     if (clazz == null) {
       return null;
     }
@@ -66,13 +63,13 @@ public class CryptoCodecFactory {
   }
 
   /**
-   * Get crypto codec for algorithm/mode/padding in config value
+   * Get crypto codec from configuration for value in
    * hive.security.crypto.cipher.suite
    *
-   * @param conf
-   *          the configuration
-   * @return CryptoCodec the codec object Null value will be returned if no
-   *         crypto codec classes with cipher suite configured.
+   * @param conf the configuration
+   * @return A instance of CryptoCodec. Null value will be returned if no
+   *         crypto codec found. Exception will be thrown if the crypto codec
+   *         don't match the cipherSuite.
    */
   public static CryptoCodec getInstance(Configuration conf) {
     String name = conf.get(ConfVars.HIVE_SECURITY_CRYPTO_CIPHER_SUITE.varname,
@@ -80,8 +77,7 @@ public class CryptoCodecFactory {
     return getInstance(conf, CipherSuite.convert(name));
   }
 
-  private static Class<? extends CryptoCodec> getCodecClass(
-      Configuration conf, CipherSuite cipherSuite) {
+  private static Class<? extends CryptoCodec> getCodecClass(Configuration conf) {
     Class<? extends CryptoCodec> result = null;
     String codecString = conf.get(ConfVars.HIVE_SECURITY_CRYPTO_CODEC.varname,
         ConfVars.HIVE_SECURITY_CRYPTO_CODEC.getDefaultValue());

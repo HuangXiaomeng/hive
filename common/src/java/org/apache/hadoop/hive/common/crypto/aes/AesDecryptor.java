@@ -15,12 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.hive.common.io.crypto.aes;
+package org.apache.hadoop.hive.common.crypto.aes;
 
-import java.io.OutputStream;
+import java.io.InputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.SecureRandom;
 import java.util.Arrays;
 
 import javax.crypto.Cipher;
@@ -29,29 +28,26 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
-import org.apache.hadoop.hive.common.io.crypto.Encryptor;
-import org.apache.hadoop.hive.common.io.crypto.Key;
+import org.apache.hadoop.hive.common.crypto.Decryptor;
+import org.apache.hadoop.hive.common.crypto.Key;
 
 import com.google.common.base.Preconditions;
 
 @InterfaceAudience.Private
 @InterfaceStability.Evolving
-public class AesEncryptor extends Encryptor {
+public class AesDecryptor extends Decryptor {
 
   private final Cipher cipher;
-  private final SecureRandom rng;
   private Key key;
   private byte[] iv;
   private boolean initialized = false;
 
-  public AesEncryptor(Cipher cipher, SecureRandom rng) {
+  public AesDecryptor(Cipher cipher) {
     this.cipher = cipher;
-    this.rng = rng;
   }
 
-  public AesEncryptor(Cipher cipher, SecureRandom rng, Key key, byte[] iv) {
+  public AesDecryptor(Cipher cipher, Key key, byte[] iv) {
     this.cipher = cipher;
-    this.rng = rng;
     this.key = key;
     this.iv = Arrays.copyOf(iv, iv.length);
   }
@@ -86,16 +82,10 @@ public class AesEncryptor extends Encryptor {
   }
 
   @Override
-  public byte[] getIv() {
-    return iv;
-  }
-
-  @Override
   public void setIv(byte[] iv) {
-    if (iv != null) {
-      Preconditions.checkArgument(iv.length == JceAesCtrCryptoCodec.IV_LENGTH,
-          "Invalid IV length");
-    }
+    Preconditions.checkNotNull(iv, "IV cannot be null");
+    Preconditions.checkArgument(iv.length == JceAesCtrCryptoCodec.IV_LENGTH,
+        "Invalid IV length");
     this.iv = Arrays.copyOf(iv, iv.length);
   }
 
@@ -105,20 +95,19 @@ public class AesEncryptor extends Encryptor {
   }
 
   @Override
-  public OutputStream createEncryptionStream(OutputStream out) {
+  public InputStream createDecryptionStream(InputStream in) {
     if (!initialized) {
       init();
     }
-    return new javax.crypto.CipherOutputStream(out, cipher);
+    return new javax.crypto.CipherInputStream(in, cipher);
   }
 
   protected void init() {
     try {
       if (iv == null) {
-        iv = new byte[getIvLength()];
-        rng.nextBytes(iv);
+        throw new NullPointerException("IV is null");
       }
-      cipher.init(javax.crypto.Cipher.ENCRYPT_MODE,
+      cipher.init(javax.crypto.Cipher.DECRYPT_MODE,
           new SecretKeySpec(key.getMaterial(), "AES"), new IvParameterSpec(iv));
     } catch (InvalidKeyException e) {
       throw new RuntimeException(e);
@@ -127,4 +116,5 @@ public class AesEncryptor extends Encryptor {
     }
     initialized = true;
   }
+
 }

@@ -16,11 +16,12 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.hive.common.io.crypto;
+package org.apache.hadoop.hive.common.crypto;
 
 import java.security.SecureRandom;
 import java.util.Arrays;
 
+import org.apache.hadoop.hive.common.crypto.Key;
 import org.junit.Assert;
 import org.junit.Test;
 

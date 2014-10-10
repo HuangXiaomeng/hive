@@ -14,36 +14,36 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.hadoop.hive.common.io.crypto;
+package org.apache.hadoop.hive.common.crypto;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.conf.Configurable;
 
 /**
- * A common interface for a cryptographic algorithm.
+ * A generic interface for a cryptographic codec.
  */
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
 public abstract class CryptoCodec implements Configurable {
 
   /**
-   * @return the CipherSuite for this codec.
+   * Return the CipherSuite for this codec.
    */
   public abstract CipherSuite getCipherSuite();
 
   /**
-   * Return this codec's algorithm
+   * Return this codec's algorithm.
    */
   public abstract String getAlgorithm();
 
   /**
-   * Return the key length required by this cipher, in bytes
+   * Return the key length required by this cipher, in bytes.
    */
   public abstract int getKeyLength();
 
   /**
-   * Return the expected initialization vector length, in bytes, or 0 if not applicable
+   * Return the expected initialization vector length, in bytes.
    */
   public abstract int getIvLength();
 

@@ -15,7 +15,7 @@
  * the License.
  */
 
-package org.apache.hadoop.hive.common.io.crypto;
+package org.apache.hadoop.hive.common.crypto;
 
 import java.util.Arrays;
 

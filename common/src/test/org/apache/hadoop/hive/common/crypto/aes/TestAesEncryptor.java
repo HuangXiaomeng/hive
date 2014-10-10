@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.hive.common.io.crypto.aes;
+package org.apache.hadoop.hive.common.crypto.aes;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,9 +25,10 @@ import java.security.SecureRandom;
 
 import javax.crypto.Cipher;
 
-import org.apache.hadoop.hive.common.io.crypto.Decryptor;
-import org.apache.hadoop.hive.common.io.crypto.Encryptor;
-import org.apache.hadoop.hive.common.io.crypto.Key;
+import org.apache.hadoop.hive.common.crypto.Decryptor;
+import org.apache.hadoop.hive.common.crypto.Encryptor;
+import org.apache.hadoop.hive.common.crypto.Key;
+import org.apache.hadoop.hive.common.crypto.aes.AesEncryptor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

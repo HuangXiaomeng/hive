@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.hive.common.io.crypto;
+package org.apache.hadoop.hive.common.crypto;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,7 +25,7 @@ public class TestCipherSuite {
   public void testAesCtr() throws Exception {
     CipherSuite SUITE = CipherSuite.AES_CTR_NOPADDING;
     Assert.assertEquals("AES/CTR/NoPadding", SUITE.getName());
-    Assert.assertEquals(16, SUITE.getAlgorithmBlockSize());
+    Assert.assertEquals(16, SUITE.getBlockSize());
 
     String trueAlgoName = "AES/CTR/NoPadding";
     String wrongAlogName = "AES/CTR/NoPadding/Wrong";
@@ -39,7 +39,7 @@ public class TestCipherSuite {
 
     SUITE = CipherSuite.convert(trueAlgoName);
     Assert.assertEquals("AES/CTR/NoPadding", SUITE.getName());
-    Assert.assertEquals(16, SUITE.getAlgorithmBlockSize());
+    Assert.assertEquals(16, SUITE.getBlockSize());
 
     try {
       SUITE = CipherSuite.convert(wrongAlogName);

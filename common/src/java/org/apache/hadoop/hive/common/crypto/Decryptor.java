@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.hive.common.io.crypto;
+package org.apache.hadoop.hive.common.crypto;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,24 +24,21 @@ import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Encryptors apply a cipher to an OutputStream to produce ciphertext.
+ * Decryptors apply a cipher to an InputStream to recover plaintext.
  */
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
-public abstract class Encryptor {
-  public static Logger LOG = LoggerFactory.getLogger(Encryptor.class);
+public abstract class Decryptor {
 
   /**
-   * Get the secret key
+   * Get the key
    */
   public abstract Key getKey();
 
   /**
-   * Set the secret key
+   * Set the key
    * @param key
    */
   public abstract void setKey(Key key);
@@ -59,11 +56,6 @@ public abstract class Encryptor {
   public abstract int getBlockSize();
 
   /**
-   * Get the initialization vector
-   */
-  public abstract byte[] getIv();
-
-  /**
    * Set the initialization vector
    * @param iv
    */
@@ -72,42 +64,51 @@ public abstract class Encryptor {
   /**
    * Reset state, reinitialize with the key and iv
    */
-  public abstract void  reset();
+  public abstract void reset();
 
   /**
-   * Create a stream for encryption
-   * @param out
+   * Create a stream for decryption
+   * @param in
    */
-  public abstract OutputStream createEncryptionStream(OutputStream out);
+  public abstract InputStream createDecryptionStream(InputStream in);
 
   /**
-   * Encrypt a stream of plaintext
+   * Decrypt a stream of ciphertext
    * @param in
    * @param out
    */
-  public void encrypt(InputStream in, OutputStream out) throws IOException {
-    OutputStream os = createEncryptionStream(out);
+  public void decrypt(InputStream in, OutputStream out, int outLen)
+      throws IOException {
+    InputStream is = createDecryptionStream(in);
+    byte buf[] = new byte[8*1024];
+    long remaining = outLen;
     try {
-      IOUtils.copy(in, os);
+      while (remaining > 0) {
+        int toRead = (int)(remaining < buf.length ? remaining : buf.length);
+        int read = is.read(buf, 0, toRead);
+        if (read < 0) {
+          break;
+        }
+        out.write(buf, 0, read);
+        remaining -= read;
+      }
     } finally {
-      os.close();
+      is.close();
     }
   }
 
   /**
-   * Encrypt a array of byte of plaintext
-   * @param src
-   * @param offset
-   * @param length
+   * Decrypt a stream to a array of byte
+   * @param in
    * @param out
    */
-  public void encrypt(byte[] src, int offset, int length,
-      OutputStream out) throws IOException {
-    OutputStream os = createEncryptionStream(out);
+  public void decrypt(InputStream in, byte[] dest, int destOffset,
+      int destSize) throws IOException {
+    InputStream is = createDecryptionStream(in);
     try {
-      os.write(src, offset, length);
+      IOUtils.readFully(is, dest, destOffset, destSize);
     } finally {
-      os.close();
+      is.close();
     }
   }
 }

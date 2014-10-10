@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.hive.common.io.crypto.aes;
+package org.apache.hadoop.hive.common.crypto.aes;
 
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
@@ -25,18 +25,15 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hive.common.io.crypto.CipherSuite;
-import org.apache.hadoop.hive.common.io.crypto.CryptoCodec;
-import org.apache.hadoop.hive.common.io.crypto.Decryptor;
-import org.apache.hadoop.hive.common.io.crypto.Encryptor;
+import org.apache.hadoop.hive.common.crypto.CipherSuite;
+import org.apache.hadoop.hive.common.crypto.CryptoCodec;
+import org.apache.hadoop.hive.common.crypto.Decryptor;
+import org.apache.hadoop.hive.common.crypto.Encryptor;
 
 import com.google.common.annotations.VisibleForTesting;
 
 /**
- * AES-128, provided by the JCE
- * <p>
- * Algorithm instances are pooled for reuse, so the cipher provider and mode
- * are configurable but fixed at instantiation.
+ * Implement the AES-CTR crypto codec using JCE provider.
  */
 @InterfaceAudience.Private
 @InterfaceStability.Evolving
