@@ -72,7 +72,7 @@ public abstract class Encryptor {
   /**
    * Reset state, reinitialize with the key and iv
    */
-  public abstract void  reset();
+  public abstract void reset();
 
   /**
    * Create a stream for encryption
