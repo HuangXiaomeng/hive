@@ -1476,7 +1476,7 @@ public class HiveConf extends Configuration {
         "Minimum number of worker threads when in HTTP mode."),
     HIVE_SERVER2_THRIFT_HTTP_MAX_WORKER_THREADS("hive.server2.thrift.http.max.worker.threads", 500,
         "Maximum number of worker threads when in HTTP mode."),
-    HIVE_SERVER2_THRIFT_HTTP_MAX_IDLE_TIME("hive.server2.thrift.http.max.idle.time", 1800000, 
+    HIVE_SERVER2_THRIFT_HTTP_MAX_IDLE_TIME("hive.server2.thrift.http.max.idle.time", 1800000,
         "Maximum idle time in milliseconds for a connection on the server when in HTTP mode."),
 
     // binary transport settings
@@ -1732,9 +1732,10 @@ public class HiveConf extends Configuration {
         "of reducers that tez specifies."),
     HIVE_SECURITY_CRYPTO_CIPHER_SUITE("hive.security.crypto.cipher.suite",
         "AES/CTR/NoPadding",
-        "Now just support AES/CTR/NoPadding"),
+        "The Cipher suite name of crypto codec cipher.\n" +
+        "The format should be algorithm/mode/padding and it will be case sensitive."),
     HIVE_SECURITY_CRYPTO_CODEC("hive.security.crypto.codec",
-        "hive.security.crypto.codec.aes.JceAesCryptoCodec",
+        "hive.security.crypto.codec.aes.JceAesCtrCryptoCodec",
         "The crypto codec should match crypto cipher suite.")
     ;
 
