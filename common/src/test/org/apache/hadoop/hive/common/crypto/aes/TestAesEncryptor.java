@@ -27,7 +27,7 @@ import javax.crypto.Cipher;
 
 import org.apache.hadoop.hive.common.crypto.Decryptor;
 import org.apache.hadoop.hive.common.crypto.Encryptor;
-import org.apache.hadoop.hive.common.crypto.Key;
+import org.apache.hadoop.hive.common.crypto.key.Key;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

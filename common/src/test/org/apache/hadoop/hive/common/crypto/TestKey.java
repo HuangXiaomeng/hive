@@ -21,7 +21,7 @@ package org.apache.hadoop.hive.common.crypto;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
-import org.apache.hadoop.hive.common.crypto.Key;
+import org.apache.hadoop.hive.common.crypto.key.Key;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
+import org.apache.hadoop.hive.common.crypto.key.Key;
 
 /**
  * Decryptors apply a cipher to an InputStream to recover plaintext.

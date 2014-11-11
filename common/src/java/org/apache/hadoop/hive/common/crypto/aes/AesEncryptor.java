@@ -30,7 +30,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.hive.common.crypto.Encryptor;
-import org.apache.hadoop.hive.common.crypto.Key;
+import org.apache.hadoop.hive.common.crypto.key.Key;
 
 import com.google.common.base.Preconditions;
 
