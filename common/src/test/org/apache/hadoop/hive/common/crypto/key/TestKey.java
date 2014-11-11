@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.hive.common.crypto;
+package org.apache.hadoop.hive.common.crypto.key;
 
 import java.security.SecureRandom;
 import java.util.Arrays;
