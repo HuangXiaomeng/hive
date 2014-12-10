@@ -16,28 +16,24 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.hive.serde2;
+package org.apache.hadoop.hive.serde2.crypto;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hive.serde2.typeinfo.TypeInfo;
+import org.apache.hadoop.crypto.key.KeyProviderFactory;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
+public class CryptoConstants {
+  // The length of key
+  public static final int KEY_LENGTH = 128;
 
-/**
- * Encode/decode binary format of column
- *
- * Currently, it's only supported by LazySimpleSerDe and HBaserSerDe, which is
- * marked by {@link FieldRewritable} interface.
- */
-public interface FieldRewriter {
+  // The length of IV
+  public static final int IV_LENGTH = 128;
 
-  void init(List<String> columnNames, List<TypeInfo> columnTypes, Properties properties,
-      Configuration conf) throws IOException;
+  // The keynames of every encrypted column split by ',', it should be set as TBLPROPERTIES
+  // like TBLPROPERTIES('hive.encrypt.keynames'='hive.k1,hive.k2')
+  public static final String HIVE_ENCRYPT_KEYNAMES = "hive.encrypt.keynames";
 
-  void encode(int index, ByteStream.Input input, ByteStream.Output output) throws IOException;
+  // The iv of encrypted column, it generated randomly by IV_LENGTH and stored to TBLPROPERTIES
+  public static final String HIVE_ENCRYPT_IV = "hive.encrypt.iv";
 
-  void decode(int index, ByteStream.Input input, ByteStream.Output output) throws IOException;
-
+  // The format of kms_uri should like "kms://http@localhost:16000/kms"
+  public static final String KMS_URI = KeyProviderFactory.KEY_PROVIDER_PATH;
 }

@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.hive.serde2;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.serde2.typeinfo.TypeInfo;
 
 import java.io.IOException;
@@ -27,8 +28,8 @@ import java.util.Properties;
 public class AbstractFieldRewriter implements FieldRewriter {
 
   @Override
-  public void init(List<String> columnNames, List<TypeInfo> columnTypes, Properties properties)
-      throws IOException {
+  public void init(List<String> columnNames, List<TypeInfo> columnTypes, Properties properties,
+      Configuration conf) throws IOException {
   }
 
   @Override
